@@ -29,11 +29,12 @@ videoRouter.post('/', (req, res) => {
         res.status(400).send({errorMessages: errors});
     } else {
         const newVideo = {
-            minAgeRestriction: null, ...req.body,
+            minAgeRestriction: null,
             id: new Date().getTime(),
             canBeDownloaded: true,
             createdAt: new Date().toISOString(),
             publicationDate: addDays(new Date(new Date()), 1).toISOString(),
+            ...req.body,
         };
         videos.push(newVideo);
         res.status(201).send(newVideo);
