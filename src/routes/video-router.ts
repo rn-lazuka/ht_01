@@ -31,7 +31,7 @@ videoRouter.post('/', (req, res) => {
         const newVideo = {
             minAgeRestriction: null,
             id: new Date().getTime(),
-            canBeDownloaded: true,
+            canBeDownloaded: false,
             createdAt: new Date().toISOString(),
             publicationDate: addDays(new Date(new Date()), 1).toISOString(),
             ...req.body,
