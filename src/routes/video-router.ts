@@ -1,6 +1,7 @@
 import {Router} from 'express';
 import {Video} from '../types';
 import {validateVideoData} from '../utils';
+import {addDays} from 'date-fns';
 
 export const videoRouter = Router();
 
@@ -27,7 +28,13 @@ videoRouter.post('/', (req, res) => {
     if (errors.length > 0) {
         res.status(400).send({errorMessages: errors});
     } else {
-        const newVideo = {minAgeRestriction: null, ...req.body, id: new Date().getTime(), canBeDownloaded: true, createdAt: new Date().toISOString(), publicationDate: new Date().toISOString(), }
+        const newVideo = {
+            minAgeRestriction: null, ...req.body,
+            id: new Date().getTime(),
+            canBeDownloaded: true,
+            createdAt: new Date().toISOString(),
+            publicationDate: addDays(new Date(new Date()), 1).toISOString(),
+        };
         videos.push(newVideo);
         res.status(201).send(newVideo);
     }
@@ -48,7 +55,7 @@ videoRouter.put('/:id', (req, res) => {
 
 videoRouter.delete('/:id', (req, res) => {
     const videoIndex = videos.findIndex(video => video.id === +req.params.id);
-    if (videoIndex > -1 ) {
+    if (videoIndex > -1) {
         videos.splice(videoIndex, 1);
         res.send(204);
     }
