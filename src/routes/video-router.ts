@@ -27,7 +27,7 @@ videoRouter.post('/', (req, res) => {
     if (errors.length > 0) {
         res.status(400).send({errorMessages: errors});
     } else {
-        videos.push({...req.body, id: new Date().getTime()});
+        videos.push({minAgeRestriction: null, ...req.body, id: new Date().getTime(), canBeDownloaded: true, createdAt: new Date().toISOString(), publicationDate: new Date().toISOString(), });
         res.status(201).send(req.body);
     }
 });
