@@ -1,30 +1,57 @@
 import {Router} from 'express';
+import {Video} from '../types';
+import {validateVideoData} from '../utils';
 
-const videoRouter = Router()
+export const videoRouter = Router();
 
-enum VideoResolutions {
-    P144 = 'P144',
-    P240 = 'P240',
-    P360 = 'P360',
-    P480 = 'P480',
-    P720 = 'P720',
-    P1080 = 'P1080',
-    P1440 = 'P1440',
-    P2160 = 'P2160'
-}
+let videos: Video[] = [];
 
-interface Video {
-    id: number;
-    title: string;
-    author: string;
-    canBeDownloaded: boolean;
-    minAgeRestriction: number | null;
-    createdAt: string;
-    publicationDate: string;
-    availableResolutions: VideoResolutions[]
-}
-
-const videos:Video[] = []
+export const clearDB = () => {
+    videos = [];
+};
 videoRouter.get('/', (req, res) => {
-    res.send(videos)
-})
+    res.send(videos);
+});
+
+videoRouter.get('/:id', (req, res) => {
+    const video = videos.find(video => video.id === +req.params.id);
+    if (video) {
+        res.send(video);
+    } else {
+        res.send(404);
+    }
+});
+
+videoRouter.post('/', (req, res) => {
+    const errors = validateVideoData(req.body);
+    if (errors.length > 0) {
+        res.status(400).send({errorMessages: errors});
+    } else {
+        videos.push({...req.body, id: new Date().getTime()});
+        res.status(201).send(req.body);
+    }
+});
+videoRouter.put('/:id', (req, res) => {
+    const videoIndex = videos.findIndex(video => video.id === +req.params.id);
+    const errors = validateVideoData(req.body);
+    if (videoIndex > -1 && errors.length > 0) {
+        res.status(400).send({errorMessages: errors});
+    }
+    if (videoIndex === -1) {
+        res.send(404);
+    } else {
+        videos[videoIndex] = {...videos[videoIndex], ...req.body};
+        res.send(204);
+    }
+});
+
+videoRouter.delete('/:id', (req, res) => {
+    const videoIndex = videos.findIndex(video => video.id === +req.params.id);
+    if (videoIndex > -1 ) {
+        videos.splice(videoIndex, 1);
+        res.send(204);
+    }
+    if (videoIndex === -1) {
+        res.send(404);
+    }
+});
