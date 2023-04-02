@@ -25,7 +25,7 @@ export const validateVideoData = (video: Video) => {
     if (video?.minAgeRestriction && (video.minAgeRestriction > 18 || video.minAgeRestriction < 1)) {
         errors.push({message: 'should be between 1 and 18', field: 'minAgeRestriction'});
     }
-    if (video?.publicationDate && new Date(video.publicationDate).toString() === 'Invalid Date' && !isoDatePattern.test(video.publicationDate)) {
+    if (video?.publicationDate && (new Date(video.publicationDate).toString() === 'Invalid Date' || !isoDatePattern.test(video.publicationDate))) {
         errors.push({message: 'should be valid date string', field: 'publicationDate'});
     }
     return errors;
