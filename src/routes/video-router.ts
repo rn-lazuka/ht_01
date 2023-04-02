@@ -26,7 +26,7 @@ videoRouter.get('/:id', (req, res) => {
 videoRouter.post('/', (req, res) => {
     const errors = validateVideoData(req.body);
     if (errors.length > 0) {
-        res.status(400).send({errorMessages: errors});
+        res.status(400).send({errorsMessages: errors});
     } else {
         const newVideo = {
             minAgeRestriction: null,
@@ -44,7 +44,7 @@ videoRouter.put('/:id', (req, res) => {
     const videoIndex = videos.findIndex(video => video.id === +req.params.id);
     const errors = validateVideoData(req.body);
     if (videoIndex > -1 && errors.length > 0) {
-        res.status(400).send({errorMessages: errors});
+        res.status(400).send({errorsMessages: errors});
     }
     if (videoIndex === -1) {
         res.send(404);
