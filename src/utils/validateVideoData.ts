@@ -3,7 +3,7 @@ import {VideoResolutions} from '../enums';
 
 export const validateVideoData = (video: Video) => {
     const errors = [];
-    const isoDatePattern = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+    const isoDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     if (!video?.title) {
         errors.push({message: 'required field', field: 'title'});
     }
