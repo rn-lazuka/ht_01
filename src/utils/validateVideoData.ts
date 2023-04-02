@@ -3,6 +3,7 @@ import {VideoResolutions} from '../enums';
 
 export const validateVideoData = (video: Video) => {
     const errors = [];
+    const isoDatePattern = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
     if (!video?.title) {
         errors.push({message: 'required field', field: 'title'});
     }
@@ -24,8 +25,8 @@ export const validateVideoData = (video: Video) => {
     if (video?.minAgeRestriction && (video.minAgeRestriction > 18 || video.minAgeRestriction < 1)) {
         errors.push({message: 'should be between 1 and 18', field: 'minAgeRestriction'});
     }
-    if (video?.publicationDate && new Date(video.publicationDate).toString() === 'Invalid Date') {
-        errors.push({message: 'should be date string', field: 'publicationDate'});
+    if (video?.publicationDate && new Date(video.publicationDate).toString() === 'Invalid Date' && !isoDatePattern.test(video.publicationDate)) {
+        errors.push({message: 'should be valid date string', field: 'publicationDate'});
     }
     return errors;
 };
