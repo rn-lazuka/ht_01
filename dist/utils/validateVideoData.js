@@ -5,6 +5,7 @@ const enums_1 = require("../enums");
 const validateVideoData = (video) => {
     var _a;
     const errors = [];
+    const isoDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     if (!(video === null || video === void 0 ? void 0 : video.title)) {
         errors.push({ message: 'required field', field: 'title' });
     }
@@ -26,8 +27,8 @@ const validateVideoData = (video) => {
     if ((video === null || video === void 0 ? void 0 : video.minAgeRestriction) && (video.minAgeRestriction > 18 || video.minAgeRestriction < 1)) {
         errors.push({ message: 'should be between 1 and 18', field: 'minAgeRestriction' });
     }
-    if ((video === null || video === void 0 ? void 0 : video.publicationDate) && new Date(video.publicationDate).toString() === 'Invalid Date') {
-        errors.push({ message: 'should be date string', field: 'publicationDate' });
+    if ((video === null || video === void 0 ? void 0 : video.publicationDate) && (new Date(video.publicationDate).toString() === 'Invalid Date' || !isoDatePattern.test(video.publicationDate))) {
+        errors.push({ message: 'should be valid date string', field: 'publicationDate' });
     }
     return errors;
 };

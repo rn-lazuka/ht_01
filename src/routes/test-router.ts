@@ -5,5 +5,5 @@ export const testRouter = Router();
 
 testRouter.delete('/', (req, res) => {
     clearDB();
-    res.send(204);
+    res.sendStatus(204);
 });

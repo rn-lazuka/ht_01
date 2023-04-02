@@ -19,7 +19,7 @@ videoRouter.get('/:id', (req, res) => {
     if (video) {
         res.send(video);
     } else {
-        res.send(404);
+        res.sendStatus(404);
     }
 });
 
@@ -47,10 +47,10 @@ videoRouter.put('/:id', (req, res) => {
         res.status(400).send({errorsMessages: errors});
     }
     if (videoIndex === -1) {
-        res.send(404);
+        res.sendStatus(404);
     } else {
         videos[videoIndex] = {...videos[videoIndex], ...req.body};
-        res.send(204);
+        res.sendStatus(204);
     }
 });
 
@@ -58,9 +58,9 @@ videoRouter.delete('/:id', (req, res) => {
     const videoIndex = videos.findIndex(video => video.id === +req.params.id);
     if (videoIndex > -1) {
         videos.splice(videoIndex, 1);
-        res.send(204);
+        res.sendStatus(204);
     }
     if (videoIndex === -1) {
-        res.send(404);
+        res.sendStatus(404);
     }
 });

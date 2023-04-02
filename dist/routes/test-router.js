@@ -6,5 +6,5 @@ const video_router_1 = require("./video-router");
 exports.testRouter = (0, express_1.Router)();
 exports.testRouter.delete('/', (req, res) => {
     (0, video_router_1.clearDB)();
-    res.send(204);
+    res.sendStatus(204);
 });
