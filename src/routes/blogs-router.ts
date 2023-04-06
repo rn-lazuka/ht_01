@@ -1,6 +1,7 @@
 import {Router, Request, Response} from 'express';
 import {blogRepository} from '../repositories/blogRepository';
 import {body, check, validationResult} from 'express-validator';
+import {checkAuth} from '../utils';
 
 export const blogRouter = Router();
 
@@ -23,7 +24,7 @@ blogRouter.get('/:id', (req, res) => {
     }
 });
 
-blogRouter.post('/blogs', blogValidations, (req: Request, res: Response) => {
+blogRouter.post('/', checkAuth, blogValidations, (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(error => ({
@@ -35,7 +36,7 @@ blogRouter.post('/blogs', blogValidations, (req: Request, res: Response) => {
     const blog = blogRepository.createBlog(req.body);
     return res.status(201).json({blog});
 });
-blogRouter.put('/:id', [...blogValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
+blogRouter.put('/:id', checkAuth,[...blogValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(error => ({
@@ -48,7 +49,7 @@ blogRouter.put('/:id', [...blogValidations, check('id').notEmpty().withMessage('
     return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-blogRouter.delete('/:id', [check('id').notEmpty().withMessage('ID parameter is required')], (req: Request, res: Response) => {
+blogRouter.delete('/:id', checkAuth,[check('id').notEmpty().withMessage('ID parameter is required')], (req: Request, res: Response) => {
     const isBlogDeleted = blogRepository.deleteBlog(req.params.id);
     isBlogDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });

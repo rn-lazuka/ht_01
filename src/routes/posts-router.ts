@@ -2,6 +2,7 @@ import {Router, Request, Response} from 'express';
 import {postsRepository} from '../repositories/postsRepository';
 import {body, check, validationResult} from 'express-validator';
 import {blogRepository} from '../repositories/blogRepository';
+import {checkAuth} from '../utils';
 
 export const postsRouter = Router();
 
@@ -31,7 +32,7 @@ postsRouter.get('/:id', (req, res) => {
     }
 });
 
-postsRouter.post('/blogs', postsValidations, (req: Request, res: Response) => {
+postsRouter.post('/blogs',checkAuth, postsValidations, (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(error => ({
@@ -43,7 +44,7 @@ postsRouter.post('/blogs', postsValidations, (req: Request, res: Response) => {
     const blog = postsRepository.createPost(req.body);
     return res.status(201).json({blog});
 });
-postsRouter.put('/:id', [...postsValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
+postsRouter.put('/:id', checkAuth,[...postsValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(error => ({
@@ -56,7 +57,7 @@ postsRouter.put('/:id', [...postsValidations, check('id').notEmpty().withMessage
     return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-postsRouter.delete('/:id', [check('id').notEmpty().withMessage('ID parameter is required')], (req: Request, res: Response) => {
+postsRouter.delete('/:id', checkAuth,[check('id').notEmpty().withMessage('ID parameter is required')], (req: Request, res: Response) => {
     const isBlogDeleted = postsRepository.deletePost(req.params.id);
     isBlogDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });
