@@ -1,9 +1,13 @@
 import {Router} from 'express';
-import {clearDB} from './video-router';
+import {clearVideosDB} from './video-router';
+import {blogRepository} from '../repositories/blogRepository';
+import {postsRepository} from '../repositories/postsRepository';
 
 export const testRouter = Router();
 
 testRouter.delete('/', (req, res) => {
-    clearDB();
+    clearVideosDB();
+    blogRepository.clearAllBlogs();
+    postsRepository.clearAllPosts()
     res.sendStatus(204);
 });

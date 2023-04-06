@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clearDB = exports.videoRouter = void 0;
+exports.clearVideosDB = exports.videoRouter = void 0;
 const express_1 = require("express");
 const utils_1 = require("../utils");
 const date_fns_1 = require("date-fns");
 exports.videoRouter = (0, express_1.Router)();
 let videos = [];
-const clearDB = () => {
+const clearVideosDB = () => {
     videos = [];
 };
-exports.clearDB = clearDB;
+exports.clearVideosDB = clearVideosDB;
 exports.videoRouter.get('/', (req, res) => {
     res.send(videos);
 });
