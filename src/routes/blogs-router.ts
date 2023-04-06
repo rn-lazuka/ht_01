@@ -36,7 +36,6 @@ blogRouter.post('/blogs', blogValidations, (req: Request, res: Response) => {
     return res.status(201).json({blog});
 });
 blogRouter.put('/:id', [...blogValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
-    const isUpdatedBlog = blogRepository.updateBlog(req.params.id, req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(error => ({
@@ -45,6 +44,7 @@ blogRouter.put('/:id', [...blogValidations, check('id').notEmpty().withMessage('
         }));
         return res.status(400).json({errorMessages});
     }
+    const isUpdatedBlog = blogRepository.updateBlog(req.params.id, req.body);
     return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
 });
 

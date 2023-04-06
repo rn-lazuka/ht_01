@@ -7,7 +7,7 @@ export const videoRouter = Router();
 
 let videos: Video[] = [];
 
-export const clearDB = () => {
+export const clearVideosDB = () => {
     videos = [];
 };
 videoRouter.get('/', (req, res) => {

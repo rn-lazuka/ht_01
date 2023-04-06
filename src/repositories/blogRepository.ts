@@ -12,7 +12,7 @@ export const blogRepository = {
     createBlog(blog: Omit<Blog, 'id'>) {
         const newBlog = {...blog, id: new Date().getTime().toString()};
         blogs.push(newBlog);
-        return newBlog
+        return newBlog;
     },
     updateBlog(id: string, updatedBlog: Blog) {
         const index = blogs.findIndex(blog => blog.id === id);
@@ -30,5 +30,8 @@ export const blogRepository = {
         } else {
             return false;
         }
+    },
+    clearAllBlogs() {
+        blogs = [];
     }
 };
