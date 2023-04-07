@@ -1,7 +1,8 @@
-import {Router, Request, Response} from 'express';
+import {Request, Response, Router} from 'express';
 import {blogRepository} from '../repositories/blogRepository';
-import {body, check, validationResult} from 'express-validator';
+import {body, check} from 'express-validator';
 import {checkAuth} from '../utils';
+import {inputValidationMiddleware} from '../utils/validateErrors';
 
 export const blogRouter = Router();
 
@@ -25,32 +26,16 @@ blogRouter.get('/:id', (req, res) => {
     }
 });
 
-blogRouter.post('/', checkAuth, blogValidations, (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const errorsMessages = errors.array().map(error => ({
-            message: error.msg,
-            field: error.param,
-        }));
-        return res.status(400).json({errorsMessages});
-    }
+blogRouter.post('/', checkAuth, blogValidations,inputValidationMiddleware, (req: Request, res: Response) => {
     const blog = blogRepository.createBlog(req.body);
     return res.status(201).json(blog);
 });
-blogRouter.put('/:id', checkAuth, [...blogValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const errorsMessages = errors.array().map(error => ({
-            message: error.msg,
-            field: error.param,
-        }));
-        return res.status(400).json({errorsMessages});
-    }
+blogRouter.put('/:id', checkAuth, [...blogValidations, check('id').notEmpty().withMessage('ID parameter is required'),],inputValidationMiddleware, (req: Request, res: Response) => {
     const isUpdatedBlog = blogRepository.updateBlog(req.params.id, req.body);
     return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-blogRouter.delete('/:id', checkAuth, [check('id').notEmpty().withMessage('ID parameter is required')], (req: Request, res: Response) => {
+blogRouter.delete('/:id', checkAuth, [check('id').notEmpty().withMessage('ID parameter is required')],inputValidationMiddleware, (req: Request, res: Response) => {
     const isBlogDeleted = blogRepository.deleteBlog(req.params.id);
     isBlogDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });

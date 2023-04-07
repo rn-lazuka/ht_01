@@ -1,8 +1,9 @@
-import {Router, Request, Response} from 'express';
+import {Request, Response, Router} from 'express';
 import {postsRepository} from '../repositories/postsRepository';
-import {body, check, validationResult} from 'express-validator';
+import {body, check} from 'express-validator';
 import {blogRepository} from '../repositories/blogRepository';
 import {checkAuth} from '../utils';
+import {inputValidationMiddleware} from '../utils/validateErrors';
 
 export const postsRouter = Router();
 
@@ -32,32 +33,16 @@ postsRouter.get('/:id', (req, res) => {
     }
 });
 
-postsRouter.post('/blogs',checkAuth, postsValidations, (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const errorsMessages = errors.array().map(error => ({
-            message: error.msg,
-            field: error.param,
-        }));
-        return res.status(400).json({errorsMessages});
-    }
+postsRouter.post('/blogs', checkAuth, postsValidations, inputValidationMiddleware, (req: Request, res: Response) => {
     const post = postsRepository.createPost(req.body);
     return res.status(201).json(post);
 });
-postsRouter.put('/:id', checkAuth,[...postsValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const errorsMessages = errors.array().map(error => ({
-            message: error.msg,
-            field: error.param,
-        }));
-        return res.status(400).json({errorsMessages});
-    }
+postsRouter.put('/:id', checkAuth, [...postsValidations, check('id').notEmpty().withMessage('ID parameter is required'),], inputValidationMiddleware, (req: Request, res: Response) => {
     const isUpdatedPost = postsRepository.updatePost(req.params.id, req.body);
     return isUpdatedPost ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-postsRouter.delete('/:id', checkAuth,[check('id').notEmpty().withMessage('ID parameter is required')], (req: Request, res: Response) => {
+postsRouter.delete('/:id', checkAuth, [check('id').notEmpty().withMessage('ID parameter is required')], inputValidationMiddleware, (req: Request, res: Response) => {
     const isPostDeleted = postsRepository.deletePost(req.params.id);
     isPostDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });
