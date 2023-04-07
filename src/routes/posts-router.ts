@@ -19,14 +19,14 @@ const postsValidations = [
     }),
 ];
 postsRouter.get('/', (req, res) => {
-    const blogs = postsRepository.getPosts();
-    res.send(blogs);
+    const posts = postsRepository.getPosts();
+    res.json(posts);
 });
 
 postsRouter.get('/:id', (req, res) => {
-    const blog = postsRepository.getPostById(req.params.id);
-    if (blog) {
-        res.send(blog);
+    const post = postsRepository.getPostById(req.params.id);
+    if (post) {
+        res.json(post);
     } else {
         res.sendStatus(404);
     }
@@ -41,8 +41,8 @@ postsRouter.post('/blogs',checkAuth, postsValidations, (req: Request, res: Respo
         }));
         return res.status(400).json({errorMessages});
     }
-    const blog = postsRepository.createPost(req.body);
-    return res.status(201).json({blog});
+    const post = postsRepository.createPost(req.body);
+    return res.status(201).json(post);
 });
 postsRouter.put('/:id', checkAuth,[...postsValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -53,11 +53,11 @@ postsRouter.put('/:id', checkAuth,[...postsValidations, check('id').notEmpty().w
         }));
         return res.status(400).json({errorMessages});
     }
-    const isUpdatedBlog = postsRepository.updatePost(req.params.id, req.body);
-    return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
+    const isUpdatedPost = postsRepository.updatePost(req.params.id, req.body);
+    return isUpdatedPost ? res.sendStatus(204) : res.sendStatus(404);
 });
 
 postsRouter.delete('/:id', checkAuth,[check('id').notEmpty().withMessage('ID parameter is required')], (req: Request, res: Response) => {
-    const isBlogDeleted = postsRepository.deletePost(req.params.id);
-    isBlogDeleted ? res.sendStatus(204) : res.sendStatus(404);
+    const isPostDeleted = postsRepository.deletePost(req.params.id);
+    isPostDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });
