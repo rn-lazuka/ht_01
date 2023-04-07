@@ -33,7 +33,7 @@ postsRouter.get('/:id', (req, res) => {
     }
 });
 
-postsRouter.post('/blogs', checkAuth, postsValidations, inputValidationMiddleware, (req: Request, res: Response) => {
+postsRouter.post('/', checkAuth, postsValidations, inputValidationMiddleware, (req: Request, res: Response) => {
     const post = postsRepository.createPost(req.body);
     return res.status(201).json(post);
 });
