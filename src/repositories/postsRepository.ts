@@ -11,16 +11,20 @@ export const postsRepository = {
         return posts.find(blog => blog.id === id);
     },
     createPost(post: Omit<Post, 'id'>) {
-        const newPost = {...post, blogName: blogRepository.getBlogById(post.blogId)!.name, id: new Date().getTime().toString()};
+        const newPost = {
+            ...post,
+            blogName: blogRepository.getBlogById(post.blogId)!.name,
+            id: new Date().getTime().toString()
+        };
         posts.push(newPost);
         return newPost;
     },
-    updatePost(id: string, updatedBlog: Post) {
+    updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
         const index = posts.findIndex(post => post.id === id);
         if (index === -1) {
             return false;
         }
-        posts[index] = {...updatedBlog, id};
+        posts[index] = {blogName: posts[index].blogName, ...updatedPost, id};
         return true;
     },
     deletePost(id: string) {
@@ -32,7 +36,7 @@ export const postsRepository = {
             return false;
         }
     },
-    clearAllPosts(){
-        posts = []
+    clearAllPosts() {
+        posts = [];
     }
 };
