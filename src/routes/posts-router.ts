@@ -35,11 +35,11 @@ postsRouter.get('/:id', (req, res) => {
 postsRouter.post('/blogs',checkAuth, postsValidations, (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        const errorMessages = errors.array().map(error => ({
+        const errorsMessages = errors.array().map(error => ({
             message: error.msg,
             field: error.param,
         }));
-        return res.status(400).json({errorMessages});
+        return res.status(400).json({errorsMessages});
     }
     const post = postsRepository.createPost(req.body);
     return res.status(201).json(post);
@@ -47,11 +47,11 @@ postsRouter.post('/blogs',checkAuth, postsValidations, (req: Request, res: Respo
 postsRouter.put('/:id', checkAuth,[...postsValidations, check('id').notEmpty().withMessage('ID parameter is required'),], (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        const errorMessages = errors.array().map(error => ({
+        const errorsMessages = errors.array().map(error => ({
             message: error.msg,
             field: error.param,
         }));
-        return res.status(400).json({errorMessages});
+        return res.status(400).json({errorsMessages});
     }
     const isUpdatedPost = postsRepository.updatePost(req.params.id, req.body);
     return isUpdatedPost ? res.sendStatus(204) : res.sendStatus(404);
