@@ -10,7 +10,7 @@ export const postsRepository = {
     getPostById(id: string) {
         return posts.find(blog => blog.id === id);
     },
-    createPost(post: Omit<Post, 'id'>) {
+    createPost(post: Omit<Post, 'id' | 'blogName'>) {
         const newPost = {
             ...post,
             blogName: blogRepository.getBlogById(post.blogId)!.name,
