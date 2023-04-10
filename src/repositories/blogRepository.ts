@@ -12,7 +12,6 @@ export const blogRepository = {
     createBlog(blog: Omit<Blog, 'id'>) {
         const newBlog = {...blog, id: new Date().getTime().toString()};
         blogs.push(newBlog);
-        console.log(newBlog);
         return newBlog;
     },
     updateBlog(id: string, updatedBlog: Blog) {
