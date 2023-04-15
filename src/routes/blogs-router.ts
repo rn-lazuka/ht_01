@@ -1,17 +1,12 @@
 import {Request, Response, Router} from 'express';
 import {blogRepository} from '../repositories/blogRepository';
-import {body, check} from 'express-validator';
+import {check} from 'express-validator';
 import {checkAuth} from '../utils';
 import {inputValidationMiddleware} from '../utils/validateErrors';
+import {blogValidations} from '../validators/blogs';
 
 export const blogRouter = Router();
 
-const blogValidations = [
-    body('name').isString().withMessage('Name must be a string').trim().notEmpty().isLength({max: 15}).withMessage('Name must not exceed 15 characters'),
-    body('description').isString().withMessage('Description must be a string').trim().notEmpty().isLength({max: 500}).withMessage('Description must not exceed 500 characters'),
-    body('websiteUrl').isString().withMessage('Website URL must be a string').trim().notEmpty().isLength({max: 100}).withMessage('Description must not exceed 100 characters')
-        .matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/).withMessage('Website URL must be a valid URL with https protocol'),
-];
 blogRouter.get('/', (req, res) => {
     const blogs = blogRepository.getBlogs();
     res.json(blogs);
@@ -35,7 +30,7 @@ blogRouter.put('/:id', checkAuth, [...blogValidations, check('id').notEmpty().wi
     return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-blogRouter.delete('/:id', checkAuth, [check('id').notEmpty().withMessage('ID parameter is required')],inputValidationMiddleware, (req: Request, res: Response) => {
+blogRouter.delete('/:id', checkAuth,inputValidationMiddleware, (req: Request, res: Response) => {
     const isBlogDeleted = blogRepository.deleteBlog(req.params.id);
     isBlogDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });

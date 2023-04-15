@@ -7,7 +7,7 @@ export function checkAuth(req: Request, res: Response, next: NextFunction) {
     }
 
     const base64Credentials = authHeader.split(' ')[1];
-    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+    const credentials = Buffer.from(base64Credentials, 'base64').toString();
     const [login, password] = credentials.split(':');
 
     if (login !== 'admin' || password !== 'qwerty') {
