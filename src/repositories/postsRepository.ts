@@ -4,10 +4,11 @@ import {postsCollection} from '../db';
 
 export const postsRepository = {
     async getPosts() {
-        return postsCollection.find().toArray();
+        return postsCollection.find().project({_id: 0}).toArray();
     },
     async getPostById(id: string) {
-        return await postsCollection.findOne({id});
+        //@ts-ignore
+        return await postsCollection.findOne({id}, {_id: 0});
     },
     async createPost(post: Omit<Post, 'id' | 'blogName'>) {
         const blog = await blogRepository.getBlogById(post.blogId);
@@ -26,10 +27,10 @@ export const postsRepository = {
         return result.matchedCount === 1;
     },
     async deletePost(id: string) {
-        const result =await postsCollection.deleteOne({id});
-        return result.deletedCount === 1
+        const result = await postsCollection.deleteOne({id});
+        return result.deletedCount === 1;
     },
     async clearAllPosts() {
-        await postsCollection.deleteMany({})
+        await postsCollection.deleteMany({});
     }
 };

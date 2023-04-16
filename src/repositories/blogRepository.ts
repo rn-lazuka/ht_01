@@ -3,13 +3,19 @@ import {blogsCollection} from '../db';
 
 export const blogRepository = {
     async getBlogs() {
-        return blogsCollection.find().toArray();
+        return blogsCollection.find({}).project({_id: 0}).toArray();
     },
     async getBlogById(id: string) {
-        return await blogsCollection.findOne({id});
+        //@ts-ignore
+        return await blogsCollection.findOne<any>({id}, {_id: 0});
     },
     async createBlog(blog: Omit<Blog, 'id'>) {
-        const newBlog = {...blog, _id: null, id: new Date().getTime().toString(), createdAt: new Date().toISOString(), isMembership: false};
+        const newBlog = {
+            ...blog,
+            id: new Date().getTime().toString(),
+            createdAt: new Date().toISOString(),
+            isMembership: false
+        };
         await blogsCollection.insertOne(newBlog);
         return newBlog;
     },
