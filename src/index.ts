@@ -1,7 +1,13 @@
 import {app} from './settings';
+import {runDB} from './db';
 
 const port = process.env.PORT || 5000
 
-app.listen(port, ()=>{
-    console.log(`App listen on port ${port}`)
-})
+const startApp = async ()=>{
+    await runDB()
+    app.listen(port, ()=>{
+        console.log(`App listen on port ${port}`)
+    })
+}
+
+startApp();

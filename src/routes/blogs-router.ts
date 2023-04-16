@@ -1,19 +1,18 @@
 import {Request, Response, Router} from 'express';
 import {blogRepository} from '../repositories/blogRepository';
-import {check} from 'express-validator';
 import {checkAuth} from '../utils';
 import {inputValidationMiddleware} from '../utils/validateErrors';
-import {blogValidations} from '../validators/blogs';
+import {blogValidations, updateBlogsValidations} from '../validators/blogs';
 
 export const blogRouter = Router();
 
-blogRouter.get('/', (req, res) => {
-    const blogs = blogRepository.getBlogs();
+blogRouter.get('/', async (req, res) => {
+    const blogs = await blogRepository.getBlogs();
     res.json(blogs);
 });
 
-blogRouter.get('/:id', (req, res) => {
-    const blog = blogRepository.getBlogById(req.params.id);
+blogRouter.get('/:id', async (req, res) => {
+    const blog = await blogRepository.getBlogById(req.params.id);
     if (blog) {
         res.json(blog);
     } else {
@@ -21,16 +20,16 @@ blogRouter.get('/:id', (req, res) => {
     }
 });
 
-blogRouter.post('/', checkAuth, blogValidations,inputValidationMiddleware, (req: Request, res: Response) => {
-    const blog = blogRepository.createBlog(req.body);
+blogRouter.post('/', checkAuth, blogValidations,inputValidationMiddleware,async (req: Request, res: Response) => {
+    const blog = await blogRepository.createBlog(req.body);
     return res.status(201).json(blog);
 });
-blogRouter.put('/:id', checkAuth, [...blogValidations, check('id').notEmpty().withMessage('ID parameter is required'),],inputValidationMiddleware, (req: Request, res: Response) => {
-    const isUpdatedBlog = blogRepository.updateBlog(req.params.id, req.body);
+blogRouter.put('/:id', checkAuth, updateBlogsValidations,inputValidationMiddleware, async (req: Request, res: Response) => {
+    const isUpdatedBlog =  await blogRepository.updateBlog(req.params.id, req.body);
     return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-blogRouter.delete('/:id', checkAuth,inputValidationMiddleware, (req: Request, res: Response) => {
-    const isBlogDeleted = blogRepository.deleteBlog(req.params.id);
+blogRouter.delete('/:id', checkAuth,inputValidationMiddleware, async (req: Request, res: Response) => {
+    const isBlogDeleted = await blogRepository.deleteBlog(req.params.id);
     isBlogDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });

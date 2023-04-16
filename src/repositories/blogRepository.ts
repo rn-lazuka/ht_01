@@ -1,37 +1,27 @@
 import {Blog} from '../types';
-
-let blogs: Blog[] = [];
+import {blogsCollection} from '../db';
 
 export const blogRepository = {
-    getBlogs() {
-        return blogs;
+    async getBlogs() {
+        return blogsCollection.find().toArray();
     },
-    getBlogById(id: string) {
-        return blogs.find(blog => blog.id === id);
+    async getBlogById(id: string) {
+        return await blogsCollection.findOne({id});
     },
-    createBlog(blog: Omit<Blog, 'id'>) {
-        const newBlog = {...blog, id: new Date().getTime().toString()};
-        blogs.push(newBlog);
+    async createBlog(blog: Omit<Blog, 'id'>) {
+        const newBlog: Blog = {...blog, id: new Date().getTime().toString(), createdAt: new Date().toISOString(), isMembership: false};
+        await blogsCollection.insertOne(newBlog);
         return newBlog;
     },
-    updateBlog(id: string, updatedBlog: Blog) {
-        const index = blogs.findIndex(blog => blog.id === id);
-        if (index === -1) {
-            return false;
-        }
-        blogs[index] = {...updatedBlog, id};
-        return true;
+    async updateBlog(id: string, updatedBlog: Blog) {
+        const result = await blogsCollection.updateOne({id}, {$set: updatedBlog});
+        return result.matchedCount === 1;
     },
-    deleteBlog(id: string) {
-        const index = blogs.findIndex(blog => blog.id === id);
-        if (index !== -1) {
-            blogs.splice(index, 1);
-            return true;
-        } else {
-            return false;
-        }
+    async deleteBlog(id: string) {
+        const result = await blogsCollection.deleteOne({id});
+        return result.deletedCount === 1;
     },
-    clearAllBlogs() {
-        blogs = [];
+    async clearAllBlogs() {
+        return await blogsCollection.deleteMany({});
     }
 };
