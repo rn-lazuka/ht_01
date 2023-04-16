@@ -1,42 +1,34 @@
 import {Post} from '../types';
 import {blogRepository} from './blogRepository';
-
-let posts: Post[] = [];
+import {postsCollection} from '../db';
 
 export const postsRepository = {
-    getPosts() {
-        return posts;
+    async getPosts() {
+        return postsCollection.find().toArray();
     },
-    getPostById(id: string) {
-        return posts.find(blog => blog.id === id);
+    async getPostById(id: string) {
+        return await postsCollection.findOne({id});
     },
-    createPost(post: Omit<Post, 'id' | 'blogName'>) {
+    async createPost(post: Omit<Post, 'id' | 'blogName'>) {
+        const blog = await blogRepository.getBlogById(post.blogId);
         const newPost = {
             ...post,
-            blogName: blogRepository.getBlogById(post.blogId)!.name,
+            blogName: blog?.name!,
+            createdAt: new Date().toISOString(),
             id: new Date().getTime().toString()
         };
-        posts.push(newPost);
+        await postsCollection.insertOne(newPost);
         return newPost;
     },
-    updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
-        const index = posts.findIndex(post => post.id === id);
-        if (index === -1) {
-            return false;
-        }
-        posts[index] = {blogName: posts[index].blogName, ...updatedPost, id};
-        return true;
+    async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
+        const result = await postsCollection.updateOne({id}, {$set: updatedPost});
+        return result.matchedCount === 1;
     },
-    deletePost(id: string) {
-        const index = posts.findIndex(post => post.id === id);
-        if (index !== -1) {
-            posts.splice(index, 1);
-            return true;
-        } else {
-            return false;
-        }
+    async deletePost(id: string) {
+        const result =await postsCollection.deleteOne({id});
+        return result.deletedCount === 1
     },
-    clearAllPosts() {
-        posts = [];
+    async clearAllPosts() {
+        await postsCollection.deleteMany({})
     }
 };
