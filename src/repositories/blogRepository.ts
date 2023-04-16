@@ -9,7 +9,7 @@ export const blogRepository = {
         return await blogsCollection.findOne({id});
     },
     async createBlog(blog: Omit<Blog, 'id'>) {
-        const newBlog: Blog = {...blog, id: new Date().getTime().toString(), createdAt: new Date().toISOString(), isMembership: false};
+        const newBlog = {...blog, _id: null, id: new Date().getTime().toString(), createdAt: new Date().toISOString(), isMembership: false};
         await blogsCollection.insertOne(newBlog);
         return newBlog;
     },
