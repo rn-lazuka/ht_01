@@ -1,4 +1,4 @@
-import {Blog} from '../types';
+import {Blog, BlogWithId} from '../types';
 import {blogsCollection} from '../db';
 
 export const blogRepository = {
@@ -9,14 +9,15 @@ export const blogRepository = {
         return await blogsCollection.findOne({id}, {projection: {_id: 0}});
     },
     async createBlog(blog: Omit<Blog, 'id'>) {
-        const newBlog = {
+        const newBlog: BlogWithId = {
             ...blog,
             id: new Date().getTime().toString(),
             createdAt: new Date().toISOString(),
             isMembership: false
         };
         await blogsCollection.insertOne(newBlog);
-        return newBlog;
+        delete newBlog._id;
+        return newBlog
     },
     async updateBlog(id: string, updatedBlog: Blog) {
         const result = await blogsCollection.updateOne({id}, {$set: updatedBlog});

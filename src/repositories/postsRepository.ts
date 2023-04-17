@@ -1,4 +1,4 @@
-import {Post} from '../types';
+import {BlogWithId, Post, PostWithId} from '../types';
 import {blogRepository} from './blogRepository';
 import {postsCollection} from '../db';
 
@@ -7,18 +7,18 @@ export const postsRepository = {
         return postsCollection.find().project({_id: 0}).toArray();
     },
     async getPostById(id: string) {
-        return await postsCollection.findOne({id}, {projection:{_id: 0}});
+        return await postsCollection.findOne({id}, {projection: {_id: 0}});
     },
     async createPost(post: Omit<Post, 'id' | 'blogName'>) {
         const blog = await blogRepository.getBlogById(post.blogId);
-        const newPost = {
+        const newPost: PostWithId = {
             ...post,
             blogName: blog?.name!,
             createdAt: new Date().toISOString(),
             id: new Date().getTime().toString(),
-            _id: null
         };
         await postsCollection.insertOne(newPost);
+        delete newPost._id;
         return newPost;
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
