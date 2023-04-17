@@ -6,8 +6,7 @@ export const blogRepository = {
         return blogsCollection.find({}).project({_id: 0}).toArray();
     },
     async getBlogById(id: string) {
-        //@ts-ignore
-        return await blogsCollection.findOne<any>({id}, {_id: 0});
+        return await blogsCollection.findOne({id}, {projection: {_id: 0}});
     },
     async createBlog(blog: Omit<Blog, 'id'>) {
         const newBlog = {

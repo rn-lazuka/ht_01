@@ -7,8 +7,7 @@ export const postsRepository = {
         return postsCollection.find().project({_id: 0}).toArray();
     },
     async getPostById(id: string) {
-        //@ts-ignore
-        return await postsCollection.findOne({id}, {_id: 0});
+        return await postsCollection.findOne({id}, {projection:{_id: 0}});
     },
     async createPost(post: Omit<Post, 'id' | 'blogName'>) {
         const blog = await blogRepository.getBlogById(post.blogId);
