@@ -1,5 +1,6 @@
+import {ObjectId} from 'mongodb';
+
 export interface Post {
-    _id?: null;
     id: string;
     title: string;
     shortDescription: string;
@@ -7,4 +8,8 @@ export interface Post {
     blogId: string;
     blogName: string;
     createdAt: string;
+}
+
+export interface PostWithId extends Post {
+    _id?: ObjectId;
 }
