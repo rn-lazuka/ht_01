@@ -1,5 +1,6 @@
 import {Blog, BlogWithId} from '../types';
 import {blogsCollection, postsCollection} from '../db';
+import {ObjectId} from 'mongodb';
 import {postsRepository} from './postsRepository';
 
 export const blogRepository = {
@@ -25,9 +26,12 @@ export const blogRepository = {
         };
     },
     async getBlogById(id: string) {
-        //@ts-ignore
-        const result = await blogsCollection.findOne({_id: id});
-        return result ? this._mapDbBlogToOutputModel(result) : null;
+        try {
+            const result = await blogsCollection.findOne({_id: new ObjectId(id)});
+            return result ? this._mapDbBlogToOutputModel(result) : null;
+        } catch (e) {
+            return null;
+        }
     },
     async getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const sortOptions: any = {};
@@ -55,13 +59,11 @@ export const blogRepository = {
         return this._mapDbBlogToOutputModel(blogWithId);
     },
     async updateBlog(id: string, updatedBlog: Blog) {
-        //@ts-ignore
-        const result = await blogsCollection.updateOne({_id: id}, {$set: updatedBlog});
+        const result = await blogsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedBlog});
         return result.matchedCount === 1;
     },
     async deleteBlog(id: string) {
-        //@ts-ignore
-        const result = await blogsCollection.deleteOne({_id: id});
+        const result = await blogsCollection.deleteOne({_id: new ObjectId(id)});
         return result.deletedCount === 1;
     },
     async clearAllBlogs() {
