@@ -1,15 +1,15 @@
 import {ObjectId} from 'mongodb';
 
 export interface Post {
-    id: string;
+    id: ObjectId;
     title: string;
     shortDescription: string;
     content: string;
-    blogId: string;
+    blogId: ObjectId;
     blogName: string;
     createdAt: string;
 }
 
-export interface PostWithId extends Post {
-    _id?: ObjectId;
+export interface PostWithId extends Omit<Post,'id'> {
+    _id: ObjectId;
 }
