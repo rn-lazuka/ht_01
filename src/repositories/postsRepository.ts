@@ -22,7 +22,7 @@ export const postsRepository = {
     },
     async createPost(post: Omit<Post, 'id'>) {
         const result = await postsCollection.insertOne(post);
-        return this._mapDbPostToOutputModel(result);
+        return this._mapDbPostToOutputModel({_id: result.insertedId, ...result});
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedPost});
@@ -37,7 +37,7 @@ export const postsRepository = {
     },
     _mapDbPostToOutputModel(post: any): Post {
         return {
-            id: post._id,
+            id: post._id.toString(),
             blogName: post.blogName,
             createdAt: post.createdAt,
             blogId: post.blogId,

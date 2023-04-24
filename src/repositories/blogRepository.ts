@@ -1,13 +1,13 @@
-import {Blog} from '../types';
+import {Blog, BlogWithId} from '../types';
 import {blogsCollection, postsCollection} from '../db';
 import {ObjectId} from 'mongodb';
 import {postsRepository} from './postsRepository';
 
 export const blogRepository = {
-    async getBlogs(page:number,pageSize:number,searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {
+    async getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {
         const filter: any = {};
         if (searchNameTerm) {
-            filter.name = { $regex: searchNameTerm, $options: 'i' }; // Case-insensitive search
+            filter.name = {$regex: searchNameTerm, $options: 'i'}; // Case-insensitive search
         }
 
         const sortOptions: any = {};
@@ -29,10 +29,10 @@ export const blogRepository = {
         const result = await blogsCollection.findOne({_id: new ObjectId(id)});
         return result ? this._mapDbBlogToOutputModel(result) : null;
     },
-    async getAllPostsForBlog(id: string,page: number, pageSize: number,sortBy: string, sortDirection: 'asc' | 'desc') {
+    async getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const sortOptions: any = {};
         sortOptions[sortBy] = sortDirection === 'asc' ? 1 : -1;
-        const filter = { blogId: new ObjectId(id) };
+        const filter = {blogId: new ObjectId(id)};
 
         const totalCount = await postsCollection.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize);
@@ -49,7 +49,10 @@ export const blogRepository = {
     },
     async createBlog(blog: Omit<Blog, 'id'>) {
         const result = await blogsCollection.insertOne(blog);
-        return this._mapDbBlogToOutputModel(result);
+        const blogWithId = {
+            ...blog, _id: result.insertedId
+        };
+        return this._mapDbBlogToOutputModel(blogWithId);
     },
     async updateBlog(id: string, updatedBlog: Blog) {
         const result = await blogsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedBlog});
@@ -62,9 +65,9 @@ export const blogRepository = {
     async clearAllBlogs() {
         return await blogsCollection.deleteMany({});
     },
-    _mapDbBlogToOutputModel(blog: any): Blog {
+    _mapDbBlogToOutputModel(blog: BlogWithId): Blog {
         return {
-            id: blog._id,
+            id: blog._id.toString(),
             createdAt: blog.createdAt,
             isMembership: blog.isMembership,
             name: blog.name,
