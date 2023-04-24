@@ -4,6 +4,7 @@ import {inputValidationMiddleware} from '../utils/validateErrors';
 import {blogPostValidations, blogValidations, updateBlogsValidations} from '../validators/blogs';
 import {blogService} from '../domain/blogService';
 import {postsService} from '../domain/postsService';
+import {blogRepository} from '../repositories/blogRepository';
 
 export const blogRouter = Router();
 
@@ -36,6 +37,10 @@ blogRouter.get('/:id', async (req, res) => {
 });
 
 blogRouter.post('/:id/posts', checkAuth, blogPostValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+    const blog = await blogRepository.getBlogById(req.params.id);
+    if (!blog) {
+        return res.sendStatus(404)
+    }
     const post = await postsService.createPost({blogId: req.params.id, ...req.body});
     return res.status(201).json(post);
 });

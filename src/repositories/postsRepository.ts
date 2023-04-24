@@ -1,6 +1,5 @@
 import {Post} from '../types';
 import {blogsCollection, postsCollection} from '../db';
-import {ObjectId} from 'mongodb';
 
 export const postsRepository = {
     async getPosts(page: number, pageSize: number) {
@@ -17,7 +16,8 @@ export const postsRepository = {
         };
     },
     async getPostById(id: string) {
-        const result = await postsCollection.findOne({_id: new ObjectId(id)});
+        //@ts-ignore
+        const result = await postsCollection.findOne({_id: id});
         return this._mapDbPostToOutputModel(result);
     },
     async createPost(post: Omit<Post, 'id'>) {
@@ -25,11 +25,13 @@ export const postsRepository = {
         return this._mapDbPostToOutputModel({_id: result.insertedId, ...post});
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
-        const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedPost});
+        //@ts-ignore
+        const result = await postsCollection.updateOne({_id: id}, {$set: updatedPost});
         return result.matchedCount === 1;
     },
     async deletePost(id: string) {
-        const result = await postsCollection.deleteOne({_id: new ObjectId(id)});
+        //@ts-ignore
+        const result = await postsCollection.deleteOne({_id: id});
         return result.deletedCount === 1;
     },
     async clearAllPosts() {
