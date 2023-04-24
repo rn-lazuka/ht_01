@@ -13,18 +13,22 @@ blogRouter.get('/', async (req, res) => {
     const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
     const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null;
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
-    const sortDirection = req.query.sortDirection ? req.query.sortDirection.toString() as 'asc' | 'desc' : 'desc';
+    const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc';
     const blogs = await blogService.getBlogs(page, pageSize, searchNameTerm, sortBy, sortDirection);
     res.json(blogs);
 });
 
 blogRouter.get('/:id/posts', async (req, res) => {
+    const blog = await blogRepository.getBlogById(req.params.id);
+    if (!blog) {
+        return res.sendStatus(404)
+    }
     const page = req.query.pageNumber ? Number(req.query.pageNumber) : 1;
     const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
     const sortDirection = req.query.sortDirection ? req.query.sortDirection.toString() as 'asc' | 'desc' : 'desc';
-    const blogs = await blogService.getAllPostsForBlog(req.params.id, page, pageSize, sortBy, sortDirection);
-    res.json(blogs);
+    const posts = await blogService.getAllPostsForBlog(req.params.id, page, pageSize, sortBy, sortDirection);
+    return res.json(posts);
 });
 
 blogRouter.get('/:id', async (req, res) => {

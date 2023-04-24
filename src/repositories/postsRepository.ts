@@ -17,20 +17,32 @@ export const postsRepository = {
         };
     },
     async getPostById(id: string) {
-        const result = await postsCollection.findOne({_id: new ObjectId(id)});
-        return this._mapDbPostToOutputModel(result);
+        try {
+            const result = await postsCollection.findOne({_id: new ObjectId(id)});
+            return this._mapDbPostToOutputModel(result);
+        } catch (e) {
+            return null;
+        }
     },
     async createPost(post: Omit<Post, 'id'>) {
         const result = await postsCollection.insertOne(post);
         return this._mapDbPostToOutputModel({_id: result.insertedId, ...post});
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
-        const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedPost});
-        return result.matchedCount === 1;
+        try {
+            const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedPost});
+            return result.matchedCount === 1;
+        } catch (e) {
+            return null;
+        }
     },
     async deletePost(id: string) {
+        try {
         const result = await postsCollection.deleteOne({_id: new ObjectId(id)});
         return result.deletedCount === 1;
+        } catch (e) {
+            return null;
+        }
     },
     async clearAllPosts() {
         await postsCollection.deleteMany({});
