@@ -10,7 +10,7 @@ export const postsService = {
         return await postsRepository.getPostById(id);
     },
     async createPost(post: Omit<Post, 'id' | 'blogName'>) {
-        const blog = await blogRepository.getBlogById(post.blogId.toString());
+        const blog = await blogRepository.getBlogById(post.blogId);
         const newPost = {
             ...post,
             blogName: blog?.name!,

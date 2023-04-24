@@ -1,6 +1,9 @@
 import {MongoClient} from 'mongodb';
 import {Blog, Post} from './types';
 
+import dotenv from 'dotenv'
+dotenv.config()
+
 const mongoUri = process.env.API_URL || 'mongodb://localhost:27017';
 
 export const client = new MongoClient(mongoUri);
