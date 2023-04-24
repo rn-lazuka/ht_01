@@ -1,7 +1,7 @@
 import {ObjectId} from 'mongodb';
 
 export interface Blog {
-    id: string;
+    id: ObjectId;
     name: string;
     description: string;
     websiteUrl: string;
@@ -9,6 +9,6 @@ export interface Blog {
     isMembership: boolean;
 }
 
-export interface BlogWithId extends Blog {
-    _id?: ObjectId;
+export interface BlogWithId extends Omit<Blog, 'id'> {
+    _id: ObjectId;
 }

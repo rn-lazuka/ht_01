@@ -1,35 +1,49 @@
-import {BlogWithId, Post, PostWithId} from '../types';
-import {blogRepository} from './blogRepository';
-import {postsCollection} from '../db';
+import {Post} from '../types';
+import {blogsCollection, postsCollection} from '../db';
+import {ObjectId} from 'mongodb';
 
 export const postsRepository = {
-    async getPosts() {
-        return postsCollection.find().project({_id: 0}).toArray();
+    async getPosts(page: number, pageSize: number) {
+        const totalCount = await blogsCollection.countDocuments();
+        const pagesCount = Math.ceil(totalCount / pageSize);
+        const skip = (page - 1) * pageSize;
+        const posts = await postsCollection.find().limit(pageSize).skip(skip).toArray();
+        return {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items: posts.map(post => this._mapDbPostToOutputModel(post))
+        };
     },
     async getPostById(id: string) {
-        return await postsCollection.findOne({id}, {projection: {_id: 0}});
+        const result = await postsCollection.findOne({_id: new ObjectId(id)});
+        return this._mapDbPostToOutputModel(result);
     },
-    async createPost(post: Omit<Post, 'id' | 'blogName'>) {
-        const blog = await blogRepository.getBlogById(post.blogId);
-        const newPost: PostWithId = {
-            ...post,
-            blogName: blog?.name!,
-            createdAt: new Date().toISOString(),
-            id: new Date().getTime().toString(),
-        };
-        await postsCollection.insertOne(newPost);
-        delete newPost._id;
-        return newPost;
+    async createPost(post: Omit<Post, 'id'>) {
+        const result = await postsCollection.insertOne(post);
+        return this._mapDbPostToOutputModel(result);
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
-        const result = await postsCollection.updateOne({id}, {$set: updatedPost});
+        const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedPost});
         return result.matchedCount === 1;
     },
     async deletePost(id: string) {
-        const result = await postsCollection.deleteOne({id});
+        const result = await postsCollection.deleteOne({_id: new ObjectId(id)});
         return result.deletedCount === 1;
     },
     async clearAllPosts() {
         await postsCollection.deleteMany({});
+    },
+    _mapDbPostToOutputModel(post: any): Post {
+        return {
+            id: post._id,
+            blogName: post.blogName,
+            createdAt: post.createdAt,
+            blogId: post.blogId,
+            content: post.content,
+            title: post.title,
+            shortDescription: post.shortDescription,
+        };
     }
 };
