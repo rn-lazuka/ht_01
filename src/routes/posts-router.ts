@@ -9,8 +9,9 @@ export const postsRouter = Router();
 postsRouter.get('/', async (req, res) => {
     const page = req.query.pageNumber ? Number(req.query.pageNumber) : 1;
     const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
-
-    const posts = await postsService.getPosts(page, pageSize);
+    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
+    const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc';
+    const posts = await postsService.getPosts(page, pageSize,sortBy,sortDirection);
     res.json(posts);
 });
 

@@ -3,11 +3,13 @@ import {blogsCollection, postsCollection} from '../db';
 import {ObjectId} from 'mongodb';
 
 export const postsRepository = {
-    async getPosts(page: number, pageSize: number) {
+    async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const totalCount = await blogsCollection.countDocuments();
         const pagesCount = Math.ceil(totalCount / pageSize);
         const skip = (page - 1) * pageSize;
-        const posts = await postsCollection.find().limit(pageSize).skip(skip).toArray();
+        const sortOptions: any = {};
+        sortOptions[sortBy] = sortDirection === 'asc' ? 1 : -1;
+        const posts = await postsCollection.find().limit(pageSize).sort(sortOptions).skip(skip).toArray();
         return {
             pagesCount,
             page,
