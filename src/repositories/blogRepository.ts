@@ -32,7 +32,7 @@ export const blogRepository = {
     async getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const sortOptions: any = {};
         sortOptions[sortBy] = sortDirection === 'asc' ? 1 : -1;
-        const filter = {blogId: new ObjectId(id)};
+        const filter = {blogId: id};
 
         const totalCount = await postsCollection.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize);
