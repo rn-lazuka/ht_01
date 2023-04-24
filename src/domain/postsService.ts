@@ -3,8 +3,8 @@ import {blogRepository} from '../repositories/blogRepository';
 import {postsRepository} from '../repositories/postsRepository';
 
 export const postsService = {
-    async getPosts(page: number, pageSize: number) {
-        return postsRepository.getPosts(page, pageSize);
+    async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
+        return postsRepository.getPosts(page, pageSize,sortBy,sortDirection);
     },
     async getPostById(id: string) {
         return await postsRepository.getPostById(id);
