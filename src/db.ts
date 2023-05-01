@@ -1,5 +1,5 @@
 import {MongoClient} from 'mongodb';
-import {Blog, Post} from './types';
+import {Blog, Post, UserEntity} from './types';
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -12,6 +12,7 @@ export const db = client.db();
 
 export const postsCollection = db.collection<Omit<Post, 'id'>>('posts', {});
 export const blogsCollection = db.collection<Omit<Blog, 'id'>>('blogs');
+export const usersCollection = db.collection<UserEntity>('users');
 
 export async function runDB() {
     try {
