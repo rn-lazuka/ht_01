@@ -25,7 +25,7 @@ export const userRepository = {
         const pagesCount = Math.ceil(totalCount / pageSize);
         const skip = (page - 1) * pageSize;
         const users = await usersCollection.find(filter).sort(sortOptions).limit(pageSize).skip(skip).toArray();
-        console.log({users: users.length})
+        console.log({users: users.length});
         return {
             pagesCount,
             page,
@@ -56,6 +56,9 @@ export const userRepository = {
         } catch (e) {
             return null;
         }
+    },
+    async clearAllUsers() {
+        await usersCollection.deleteMany({});
     },
     _mapDbUserToOutputModel(user: UserWithId): User {
         return {
