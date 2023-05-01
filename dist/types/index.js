@@ -13,3 +13,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./Video"), exports);
 __exportStar(require("./Blog"), exports);
 __exportStar(require("./Post"), exports);
+__exportStar(require("./Common"), exports);
+__exportStar(require("./User"), exports);
