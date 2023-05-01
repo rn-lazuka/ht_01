@@ -11,21 +11,22 @@ export const userRepository = {
     async getUsers(pagination: Pagination, sorting: Sorting, searchTerm: UserSearchTerm) {
         const {pageSize, page} = pagination;
         const filter: any = {};
-        if (searchTerm.searchEmailTerm) {
-            filter.email = {$regex: searchTerm.searchEmailTerm, $options: 'i'};
+        if (searchTerm.searchEmailTerm || searchTerm.searchLoginTerm) {
+            filter.$or = [];
+            if (searchTerm.searchEmailTerm) {
+                filter.$or.push({email: {$regex: searchTerm.searchEmailTerm, $options: 'i'}});
+            }
+            if (searchTerm.searchLoginTerm) {
+                filter.$or.push({login: {$regex: searchTerm.searchLoginTerm, $options: 'i'}});
+            }
         }
-        if (searchTerm.searchLoginTerm) {
-            filter.login = {$regex: searchTerm.searchLoginTerm, $options: 'i'};
-        }
+
         const sortOptions: any = {};
         sortOptions[sorting.sortBy] = sorting.sortDirection === 'asc' ? 1 : -1;
-        console.log({filter});
         const totalCount = await usersCollection.countDocuments(filter);
-        console.log({totalCount});
         const pagesCount = Math.ceil(totalCount / pageSize);
         const skip = (page - 1) * pageSize;
         const users = await usersCollection.find(filter).sort(sortOptions).limit(pageSize).skip(skip).toArray();
-        console.log({users: users.length});
         return {
             pagesCount,
             page,
