@@ -3,10 +3,14 @@ import {videoRouter} from './routes/video-router';
 import {testRouter} from './routes/test-router';
 import {blogRouter} from './routes/blogs-router';
 import {postsRouter} from './routes/posts-router';
+import {userRouter} from './routes/users-router';
+import {authRouter} from './routes/auth-router';
 
 export const app = express();
 
 app.use(express.json());
+app.use('/users', userRouter);
+app.use('/auth', authRouter);
 app.use('/videos', videoRouter);
 app.use('/blogs', blogRouter);
 app.use('/posts', postsRouter);

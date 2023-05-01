@@ -11,6 +11,7 @@
     "test": "jest -i"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
@@ -21,6 +22,7 @@
     "ts-jest": "^29.0.5"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
