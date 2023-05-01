@@ -19,7 +19,7 @@ export const userRepository = {
         }
         const sortOptions: any = {};
         sortOptions[sorting.sortBy] = sorting.sortDirection === 'asc' ? 1 : -1;
-
+        console.log(filter);
         const totalCount = await usersCollection.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize);
         const skip = (page - 1) * pageSize;
