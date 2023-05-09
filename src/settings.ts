@@ -5,12 +5,11 @@ import {blogRouter} from './routes/blogs-router';
 import {postsRouter} from './routes/posts-router';
 import {userRouter} from './routes/users-router';
 import {authRouter} from './routes/auth-router';
+import dotenv from 'dotenv';
 
 export const app = express();
-export const settings = {
-  MONGO_URI: process.env.API_URL || 'mongodb://localhost:27017',
-  JWT_SECRET:   process.env.JWT_SECRET || '123',
-}
+dotenv.config();
+export const JWT_SECRET = process.env.JWT_SECRET || '123';
 
 app.use(express.json());
 app.use('/users', userRouter);

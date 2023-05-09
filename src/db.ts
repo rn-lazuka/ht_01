@@ -1,12 +1,13 @@
 import {MongoClient} from 'mongodb';
 import {Blog, Post, UserEntity} from './types';
-
 import dotenv from 'dotenv'
-import {settings} from './settings';
-import {CommentEntity} from './types/Comment';
+import {CommentEntity} from './types';
+
 dotenv.config()
 
-export const client = new MongoClient(settings.MONGO_URI);
+export const MONGO_URI = process.env.API_URL || 'mongodb://localhost:27017';
+
+export const client = new MongoClient(MONGO_URI);
 
 export const db = client.db();
 
