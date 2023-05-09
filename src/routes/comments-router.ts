@@ -1,8 +1,8 @@
 import {Request, Response, Router} from 'express';
 import {inputValidationMiddleware} from '../utils/validateErrors';
-import {authMiddleware} from '../middlewares/authMiddleware';
 import {commentsValidations} from '../validators/comments';
 import {commentsService} from '../domain/commentsService';
+import { checkAuth } from '../utils';
 
 export const commentsRouter = Router();
 
@@ -15,7 +15,7 @@ commentsRouter.get('/:id', async (req, res) => {
     }
 });
 
-commentsRouter.put('/:id', authMiddleware, commentsValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+commentsRouter.put('/:id', checkAuth, commentsValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.id);
     if(req.user?._id.toString() !== comment?.id) {
         return res.sendStatus(403)
@@ -24,7 +24,7 @@ commentsRouter.put('/:id', authMiddleware, commentsValidations, inputValidationM
     return isUpdatedComment ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-commentsRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
+commentsRouter.delete('/:id', checkAuth, async (req: Request, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.id);
     if(req.user?._id.toString() !== comment?.id) {
         return res.sendStatus(403)
