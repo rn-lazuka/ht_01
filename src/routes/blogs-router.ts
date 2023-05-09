@@ -4,7 +4,7 @@ import {blogPostValidations, blogValidations, updateBlogsValidations} from '../v
 import {blogService} from '../domain/blogService';
 import {postsService} from '../domain/postsService';
 import {blogRepository} from '../repositories/blogRepository';
-import {authMiddleware} from '../middlewares/authMiddleware';
+import {checkAuth} from '../utils';
 
 export const blogRouter = Router();
 
@@ -40,7 +40,7 @@ blogRouter.get('/:id', async (req, res) => {
     }
 });
 
-blogRouter.post('/:id/posts', authMiddleware, blogPostValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+blogRouter.post('/:id/posts', checkAuth, blogPostValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const blog = await blogRepository.getBlogById(req.params.id);
     if (!blog) {
         return res.sendStatus(404)
@@ -49,16 +49,16 @@ blogRouter.post('/:id/posts', authMiddleware, blogPostValidations, inputValidati
     return res.status(201).json(post);
 });
 
-blogRouter.post('/', authMiddleware, blogValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+blogRouter.post('/', checkAuth, blogValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const blog = await blogService.createBlog(req.body);
     return res.status(201).json(blog);
 });
-blogRouter.put('/:id', authMiddleware, updateBlogsValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+blogRouter.put('/:id', checkAuth, updateBlogsValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const isUpdatedBlog = await blogService.updateBlog(req.params.id, req.body);
     return isUpdatedBlog ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-blogRouter.delete('/:id', authMiddleware, inputValidationMiddleware, async (req: Request, res: Response) => {
+blogRouter.delete('/:id', checkAuth, inputValidationMiddleware, async (req: Request, res: Response) => {
     const isBlogDeleted = await blogService.deleteBlog(req.params.id);
     isBlogDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });

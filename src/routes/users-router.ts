@@ -2,11 +2,11 @@ import {Request, Response, Router} from 'express';
 import {inputValidationMiddleware} from '../utils/validateErrors';
 import {userService} from '../domain/userService';
 import {userValidations} from '../validators/users';
-import {authMiddleware} from '../middlewares/authMiddleware';
+import { checkAuth } from '../utils';
 
 export const userRouter = Router();
 
-userRouter.get('/', authMiddleware, inputValidationMiddleware, async (req, res) => {
+userRouter.get('/', checkAuth, inputValidationMiddleware, async (req, res) => {
     const page = req.query.pageNumber ? Number(req.query.pageNumber) : 1;
     const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
     const searchLoginTerm = req.query.searchLoginTerm ? req.query.searchLoginTerm.toString() : null;
@@ -20,11 +20,11 @@ userRouter.get('/', authMiddleware, inputValidationMiddleware, async (req, res) 
     res.json(users);
 });
 
-userRouter.post('/', authMiddleware, userValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+userRouter.post('/', checkAuth, userValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const user = await userService.createUser(req.body);
     return res.status(201).json(user);
 });
-userRouter.delete('/:id', authMiddleware, inputValidationMiddleware, async (req: Request, res: Response) => {
+userRouter.delete('/:id', checkAuth, inputValidationMiddleware, async (req: Request, res: Response) => {
     const isUserDeleted = await userService.deleteUser(req.params.id);
     isUserDeleted ? res.sendStatus(204) : res.sendStatus(404);
 });
