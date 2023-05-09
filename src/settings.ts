@@ -7,6 +7,10 @@ import {userRouter} from './routes/users-router';
 import {authRouter} from './routes/auth-router';
 
 export const app = express();
+export const settings = {
+  MONGO_URI: process.env.API_URL || 'mongodb://localhost:27017',
+  JWT_SECRET:   process.env.JWT_SECRET || '123',
+}
 
 app.use(express.json());
 app.use('/users', userRouter);

@@ -1,12 +1,7 @@
 import {Pagination, Sorting, UserEntity} from '../types';
 import bcrypt from 'bcrypt';
 import {userRepository, UserSearchTerm} from '../repositories/userRepository';
-
-interface CheckPassProps {
-    passwordHash: string;
-    passwordSalt: string;
-    password: string;
-}
+import {ObjectId} from 'mongodb';
 
 export const userService = {
     getUsers(pagination: Pagination, searchTerm: UserSearchTerm, sorting: Sorting) {
@@ -24,12 +19,16 @@ export const userService = {
         };
         return userRepository.createUser(newUser);
     },
-    async getUserByLogin(loginOrEmail: string) {
-        return await userRepository.getUserByLoginAndPass(loginOrEmail);
+    async findUserById(id: ObjectId) {
+        return userRepository.findUserById(id)
     },
-    async checkUserPass({passwordSalt,passwordHash,password}: CheckPassProps) {
-        const hash = await bcrypt.hash(password, passwordSalt);
-        return hash === passwordHash;
+    async checkCredentials(loginOrEmail: string, password: string) {
+        const user = await userRepository.getUserByLoginAndPass(loginOrEmail);
+        if (user && user?.passwordSalt) {
+            const hash = await bcrypt.hash(password, user.passwordSalt);
+            return hash === user?.passwordHash ? user : null
+        }
+        return null;
     },
     deleteUser(id: string) {
         return userRepository.deleteUser(id);
