@@ -4,6 +4,7 @@ import {postsValidations, updatePostsValidations} from '../validators/posts';
 import {postsService} from '../domain/postsService';
 import {commentsValidations} from '../validators/comments';
 import { checkAuth } from '../utils';
+import {authMiddleware} from '../middlewares/authMiddleware';
 
 export const postsRouter = Router();
 
@@ -33,13 +34,14 @@ postsRouter.get('/:id/comments', async (req, res) => {
     return comments ? res.status(201).json(comments) : res.sendStatus(404)
 });
 
-postsRouter.post('/:id/comments', checkAuth, commentsValidations, async (req: Request, res: Response) => {
+postsRouter.post('/:id/comments', authMiddleware, commentsValidations, async (req: Request, res: Response) => {
     const comment = await postsService.createComment({
         postId: req.params.id,
         content: req.body.content,
         userId: req.user!._id.toString(),
         userLogin: req.user!.login,
     });
+    debugger
     return comment ? res.status(201).json(comment) : res.sendStatus(404);
 });
 
