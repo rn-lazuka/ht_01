@@ -13,6 +13,6 @@ export interface User extends UserEntity {
     id: string;
 }
 
-export interface UserWithId extends UserEntity {
+export interface UserDBType extends UserEntity {
     _id: ObjectId;
 }

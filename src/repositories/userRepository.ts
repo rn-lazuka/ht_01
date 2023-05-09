@@ -1,4 +1,4 @@
-import {Pagination, Sorting, User, UserEntity, UserWithId} from '../types';
+import {Pagination, Sorting, User, UserEntity, UserDBType} from '../types';
 import {usersCollection} from '../db';
 import {ObjectId} from 'mongodb';
 
@@ -35,12 +35,15 @@ export const userRepository = {
             items: users.map((user) => this._mapDbUserToOutputModel(user))
         };
     },
+    async findUserById(id: ObjectId) {
+        return await usersCollection.findOne({_id: id});
+    },
     async createUser(user: UserEntity) {
         const result = await usersCollection.insertOne(user);
-        const userWithId: UserWithId = {
+        const UserDBType: UserDBType = {
             ...user, _id: result.insertedId
         };
-        return this._mapDbUserToOutputModel(userWithId);
+        return this._mapDbUserToOutputModel(UserDBType);
     },
     async deleteUser(id: string) {
         try {
@@ -50,10 +53,17 @@ export const userRepository = {
             return null;
         }
     },
-    async getUserByLoginAndPass(loginOrEmail: string) {
+    async getUserByLoginAndPass(loginOrEmail: string): Promise<User | null> {
         try {
             const result = await usersCollection.findOne({login: loginOrEmail});
-            return result ? {passwordHash: result.passwordHash, passwordSalt: result.passwordSalt} : null;
+            return result ? {
+                id: result._id.toString(),
+                createdAt: result.createdAt,
+                login: result.login,
+                email: result.email,
+                passwordHash: result.passwordHash,
+                passwordSalt: result.passwordSalt
+            } : null;
         } catch (e) {
             return null;
         }
@@ -61,7 +71,7 @@ export const userRepository = {
     async clearAllUsers() {
         await usersCollection.deleteMany({});
     },
-    _mapDbUserToOutputModel(user: UserWithId): User {
+    _mapDbUserToOutputModel(user: UserDBType): User {
         return {
             id: user._id.toString(),
             createdAt: user.createdAt,

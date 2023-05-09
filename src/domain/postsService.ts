@@ -2,9 +2,16 @@ import {Post} from '../types';
 import {blogRepository} from '../repositories/blogRepository';
 import {postsRepository} from '../repositories/postsRepository';
 
+export interface CreateCommentProps {
+    postId: string;
+    content: string;
+    userId: string;
+    userLogin: string;
+}
+
 export const postsService = {
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
-        return postsRepository.getPosts(page, pageSize,sortBy,sortDirection);
+        return postsRepository.getPosts(page, pageSize, sortBy, sortDirection);
     },
     async getPostById(id: string) {
         return await postsRepository.getPostById(id);
@@ -17,6 +24,22 @@ export const postsService = {
             createdAt: new Date().toISOString(),
         };
         return await postsRepository.createPost(newPost);
+    },
+    async getCommentsByPostId(postId: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
+        return postsRepository.getCommentsByPostId({postId, page, pageSize, sortBy, sortDirection});
+    },
+    async createComment(props: CreateCommentProps) {
+        const newComment = {
+            postId: props.postId,
+            content: props.content,
+            commentatorInfo: {
+                userId: props.userId,
+                userLogin: props.userLogin
+            },
+            createdAt: new Date().toISOString(),
+        };
+        const isUpdated = await postsRepository.addComment(newComment);
+        return isUpdated ? newComment : null;
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
         return await postsRepository.updatePost(id, updatedPost);
