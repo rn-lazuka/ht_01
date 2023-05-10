@@ -38,8 +38,7 @@ export const postsService = {
             },
             createdAt: new Date().toISOString(),
         };
-        const isUpdated = await postsRepository.addComment(newComment);
-        return isUpdated ? newComment : null;
+        return await postsRepository.addComment(newComment);
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
         return await postsRepository.updatePost(id, updatedPost);
