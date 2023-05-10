@@ -31,6 +31,7 @@ postsRouter.get('/:id/comments', async (req, res) => {
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
     const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc';
     const comments = await postsService.getCommentsByPostId(req.params.id, page, pageSize, sortBy, sortDirection);
+    debugger
     return comments ? res.status(201).json(comments) : res.sendStatus(404)
 });
 

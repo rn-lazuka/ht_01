@@ -7,9 +7,10 @@ import {authMiddleware} from '../middlewares/authMiddleware';
 export const commentsRouter = Router();
 
 commentsRouter.get('/:id', async (req, res) => {
-    const blog = await commentsService.getCommentById(req.params.id);
-    if (blog) {
-        res.json(blog);
+    const comment = await commentsService.getCommentById(req.params.id);
+    debugger
+    if (comment) {
+        res.json(comment);
     } else {
         res.sendStatus(404);
     }
@@ -17,7 +18,8 @@ commentsRouter.get('/:id', async (req, res) => {
 
 commentsRouter.put('/:id', authMiddleware, commentsValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.id);
-    if(req.user?._id.toString() !== comment?.id) {
+    debugger
+    if(req.user?._id.toString() !== comment?.commentatorInfo.userId) {
         return res.sendStatus(403)
     }
     const isUpdatedComment = await commentsService.updateComment(req.params.id, req.body);
@@ -26,7 +28,8 @@ commentsRouter.put('/:id', authMiddleware, commentsValidations, inputValidationM
 
 commentsRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
     const comment = await commentsService.getCommentById(req.params.id);
-    if(req.user?._id.toString() !== comment?.id) {
+    debugger
+    if(req.user?._id.toString() !== comment?.commentatorInfo.userId) {
         return res.sendStatus(403)
     }
     const isCommentDeleted = await commentsService.deleteComment(req.params.id);

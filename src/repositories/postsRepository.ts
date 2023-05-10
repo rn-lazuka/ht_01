@@ -1,5 +1,5 @@
-import {Comment, CommentEntity, Post} from '../types';
-import {blogsCollection, commentsCollection, postsCollection} from '../db';
+import {CommentEntity, Post} from '../types';
+import { commentsCollection, postsCollection} from '../db';
 import {ObjectId} from 'mongodb';
 import {commentsRepository} from './commentsRepository';
 
@@ -13,7 +13,7 @@ export interface GetCommentProps {
 
 export const postsRepository = {
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
-        const totalCount = await blogsCollection.countDocuments();
+        const totalCount = await postsCollection.countDocuments();
         const pagesCount = Math.ceil(totalCount / pageSize);
         const skip = (page - 1) * pageSize;
         const sortOptions: any = {};
@@ -39,9 +39,15 @@ export const postsRepository = {
         const result = await postsCollection.insertOne(post);
         return this._mapDbPostToOutputModel({_id: result.insertedId, ...post});
     },
-    async getCommentsByPostId({postId,sortBy='createdAt',sortDirection='desc',page=1,pageSize=10}:GetCommentProps) {
+    async getCommentsByPostId({
+                                  postId,
+                                  sortBy = 'createdAt',
+                                  sortDirection = 'desc',
+                                  page = 1,
+                                  pageSize = 10
+                              }: GetCommentProps) {
         try {
-            const totalCount = await blogsCollection.countDocuments();
+            const totalCount = await commentsCollection.countDocuments();
             const pagesCount = Math.ceil(totalCount / pageSize);
             const skip = (page - 1) * pageSize;
             const sortOptions: any = {};
@@ -58,9 +64,9 @@ export const postsRepository = {
             return null;
         }
     },
-    async addComment(comment:CommentEntity) {
-        const result = await commentsCollection.insertOne({...comment});
-        return commentsRepository._mapDbCommentToOutputModel({_id: result.insertedId, ...comment});
+    async addComment(comment: CommentEntity) {
+        const result = await commentsCollection.insertOne(comment);
+        return commentsRepository._mapDbCommentToOutputModel({...comment, _id: result.insertedId});
     },
     async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
         try {
