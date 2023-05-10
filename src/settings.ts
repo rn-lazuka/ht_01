@@ -5,6 +5,7 @@ import {blogRouter} from './routes/blogs-router';
 import {postsRouter} from './routes/posts-router';
 import {userRouter} from './routes/users-router';
 import {authRouter} from './routes/auth-router';
+import {commentsRouter} from './routes/comments-router';
 import dotenv from 'dotenv';
 
 export const app = express();
@@ -17,4 +18,5 @@ app.use('/auth', authRouter);
 app.use('/videos', videoRouter);
 app.use('/blogs', blogRouter);
 app.use('/posts', postsRouter);
+app.use('/comments', commentsRouter);
 app.use('/testing/all-data', testRouter);
