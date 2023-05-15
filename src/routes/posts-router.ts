@@ -34,7 +34,7 @@ postsRouter.get('/:id/comments', async (req, res) => {
     return comments ? res.status(200).json(comments) : res.sendStatus(404)
 });
 
-postsRouter.post('/:id/comments', authMiddleware, commentsValidations, async (req: Request, res: Response) => {
+postsRouter.post('/:id/comments', authMiddleware, commentsValidations,inputValidationMiddleware, async (req: Request, res: Response) => {
     const comment = await postsService.createComment({
         postId: req.params.id,
         content: req.body.content,
