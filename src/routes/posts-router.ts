@@ -31,7 +31,7 @@ postsRouter.get('/:id/comments', async (req, res) => {
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
     const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc';
     const comments = await postsService.getCommentsByPostId(req.params.id, page, pageSize, sortBy, sortDirection);
-    return comments ? res.status(201).json(comments) : res.sendStatus(404)
+    return comments ? res.status(200).json(comments) : res.sendStatus(404)
 });
 
 postsRouter.post('/:id/comments', authMiddleware, commentsValidations, async (req: Request, res: Response) => {
@@ -41,7 +41,7 @@ postsRouter.post('/:id/comments', authMiddleware, commentsValidations, async (re
         userId: req.user!._id.toString(),
         userLogin: req.user!.login,
     });
-    return comment ? res.status(200).json(comment) : res.sendStatus(404);
+    return comment ? res.status(201).json(comment) : res.sendStatus(404);
 });
 
 postsRouter.post('/', checkAuth, postsValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
