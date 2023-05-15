@@ -29,6 +29,8 @@ export const postsService = {
         return postsRepository.getCommentsByPostId({postId, page, pageSize, sortBy, sortDirection});
     },
     async createComment(props: CreateCommentProps) {
+        const  post =  await postsRepository.getPostById(props.postId)
+        if(!post) return null
         const newComment = {
             postId: props.postId,
             content: props.content,

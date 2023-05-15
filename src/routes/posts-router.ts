@@ -41,6 +41,7 @@ postsRouter.post('/:id/comments', authMiddleware, commentsValidations,inputValid
         userId: req.user!._id.toString(),
         userLogin: req.user!.login,
     });
+    if(!comment) return res.sendStatus(404)
     return comment ? res.status(201).json(comment) : res.sendStatus(404);
 });
 
