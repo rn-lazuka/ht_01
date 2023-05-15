@@ -16,7 +16,7 @@ export const blogRepository = {
         const totalCount = await blogsCollection.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize);
         const skip = (page - 1) * pageSize;
-        const blogs = await blogsCollection.find(filter).sort(sortOptions).limit(pageSize).skip(skip).toArray();
+        const blogs = await blogsCollection.find(filter).sort(sortOptions).skip(skip).limit(pageSize).toArray();
         return {
             pagesCount,
             page,

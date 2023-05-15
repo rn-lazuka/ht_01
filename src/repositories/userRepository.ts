@@ -26,7 +26,7 @@ export const userRepository = {
         const totalCount = await usersCollection.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize);
         const skip = (page - 1) * pageSize;
-        const users = await usersCollection.find(filter).sort(sortOptions).limit(pageSize).skip(skip).toArray();
+        const users = await usersCollection.find(filter).sort(sortOptions).skip(skip).limit(pageSize).toArray();
         return {
             pagesCount,
             page,

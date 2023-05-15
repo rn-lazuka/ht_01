@@ -18,7 +18,7 @@ export const postsRepository = {
         const skip = (page - 1) * pageSize;
         const sortOptions: any = {};
         sortOptions[sortBy] = sortDirection === 'asc' ? 1 : -1;
-        const posts = await postsCollection.find().limit(pageSize).sort(sortOptions).skip(skip).toArray();
+        const posts = await postsCollection.find().sort(sortOptions).skip(skip).limit(pageSize).toArray();
         return {
             pagesCount,
             page,
@@ -47,12 +47,13 @@ export const postsRepository = {
                                   pageSize = 10
                               }: GetCommentProps) {
         try {
-            const totalCount = await commentsCollection.countDocuments();
+            const filter = {postId}
+            const totalCount = await commentsCollection.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             const skip = (page - 1) * pageSize;
             const sortOptions: any = {};
             sortOptions[sortBy] = sortDirection === 'asc' ? 1 : -1;
-            const comments = await commentsCollection.find({postId}).limit(pageSize).sort(sortOptions).skip(skip).toArray();
+            const comments = await commentsCollection.find(filter).sort(sortOptions).skip(skip).limit(pageSize).toArray();
             return {
                 pagesCount,
                 page,
