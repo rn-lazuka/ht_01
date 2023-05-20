@@ -40,6 +40,7 @@ authRouter.post('/registration', registrationValidations, inputValidationMiddlew
 
 authRouter.post('/registration-confirmation', registrationConfirmationValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const result = await authService.confirmEmail(req.body.code);
+    console.log(result);
     return result ? res.sendStatus(204) : res.sendStatus(400);
 });
 

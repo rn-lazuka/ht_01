@@ -39,7 +39,8 @@ export const userRepository = {
         return await usersCollection.findOne({_id: id});
     },
     async updateUserConfirmStatus(id: ObjectId) {
-        return await usersCollection.updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}});
+        const result = await usersCollection.updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}});
+        return result.modifiedCount === 1
     },
     async updateUserConfirmationData(id: ObjectId, data: EmailConfirmation) {
         const  {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}});
