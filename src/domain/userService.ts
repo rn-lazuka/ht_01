@@ -46,8 +46,6 @@ export const userService = {
         }
     },
     async createUser(user: NewUserData) {
-        const userFromDB = await userRepository.findUserByLoginOrEmail(user.login);
-        if (userFromDB) return null;
         const passSalt = await bcrypt.genSalt(10);
         const passHash = await bcrypt.hash(user.password, passSalt);
         const newUser: UserEntity = {
