@@ -1,4 +1,4 @@
-import {Pagination, Sorting, User, UserEntity, UserDBType} from '../types';
+import {Pagination, Sorting, User, UserEntity, UserDBType, EmailConfirmation} from '../types';
 import {usersCollection} from '../db';
 import {ObjectId} from 'mongodb';
 
@@ -38,12 +38,30 @@ export const userRepository = {
     async findUserById(id: ObjectId) {
         return await usersCollection.findOne({_id: id});
     },
+    async updateUserConfirmStatus(id: ObjectId) {
+        return await usersCollection.updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}});
+    },
+    async updateUserConfirmationData(id: ObjectId, data: EmailConfirmation) {
+        const  {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}});
+        return value ?  {
+            id: value._id.toString(),
+            createdAt: value.createdAt,
+            login: value.login,
+            email: value.email,
+            passwordHash: value.passwordHash,
+            passwordSalt: value.passwordSalt,
+            emailConfirmation: value.emailConfirmation
+        } : null;
+    },
+    async findUserByConfirmationCode(code: string) {
+        return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+    },
     async createUser(user: UserEntity) {
         const result = await usersCollection.insertOne(user);
         const UserDBType: UserDBType = {
             ...user, _id: result.insertedId
         };
-        return this._mapDbUserToOutputModel(UserDBType);
+        return UserDBType;
     },
     async deleteUser(id: string) {
         try {
@@ -53,16 +71,17 @@ export const userRepository = {
             return null;
         }
     },
-    async getUserByLoginAndPass(loginOrEmail: string): Promise<User | null> {
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<User | null> {
         try {
-            const result = await usersCollection.findOne({login: loginOrEmail});
+            const result = await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]});
             return result ? {
                 id: result._id.toString(),
                 createdAt: result.createdAt,
                 login: result.login,
                 email: result.email,
                 passwordHash: result.passwordHash,
-                passwordSalt: result.passwordSalt
+                passwordSalt: result.passwordSalt,
+                emailConfirmation: result.emailConfirmation
             } : null;
         } catch (e) {
             return null;

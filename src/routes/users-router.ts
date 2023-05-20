@@ -21,7 +21,7 @@ userRouter.get('/', checkAuth, inputValidationMiddleware, async (req, res) => {
 });
 
 userRouter.post('/', checkAuth, userValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const user = await userService.createUser(req.body);
+    const user = await userService.createUserByAdmin(req.body);
     return res.status(201).json(user);
 });
 userRouter.delete('/:id', checkAuth, inputValidationMiddleware, async (req: Request, res: Response) => {
