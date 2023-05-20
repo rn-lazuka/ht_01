@@ -67,6 +67,7 @@ export const userService = {
             const result = await mailService.sendEmailConfirmationCode(createResult);
             return result ? createResult : null;
         } catch (e) {
+            console.error(e);
             await userRepository.deleteUser(createResult._id.toString());
             return null;
         }
