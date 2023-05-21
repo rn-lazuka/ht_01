@@ -43,7 +43,9 @@ export const userRepository = {
         return result.modifiedCount === 1
     },
     async updateUserConfirmationData(id: ObjectId, data: EmailConfirmation) {
-        const  {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}});
+        const  {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}},{
+            returnDocument: 'after'
+        });
         return value ?  {
             id: value._id.toString(),
             createdAt: value.createdAt,
