@@ -14,7 +14,7 @@ export const registrationValidations = [
         }
         return true;
     }),
-    body('password').isString().trim().notEmpty().isLength({min: 3, max:20}),
+    body('password').isString().trim().notEmpty().isLength({min: 6, max:20}),
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value) => {
         const email = await userRepository.findUserByLoginOrEmail(value);
         if (email) {

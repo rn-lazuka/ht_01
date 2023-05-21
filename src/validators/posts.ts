@@ -10,7 +10,6 @@ export const postsValidations = [
         if (!blog) {
             throw new Error('Invalid blog ID');
         }
-        return true;
     }),
 ];
 
