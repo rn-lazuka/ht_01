@@ -12,7 +12,6 @@ export const authService = {
     async resendEmailConfirmation(email: string) {
         const user = await userRepository.findUserByLoginOrEmail(email);
         if (!user) return false;
-        if (user.emailConfirmation?.isConfirmed) return false;
         return await userService.resendEmailConfirmation(user);
     }
 };
