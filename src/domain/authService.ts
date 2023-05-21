@@ -5,7 +5,6 @@ export const authService = {
     async confirmEmail(code: string) {
         const user = await userService.findUserByConfirmationCode(code);
         if (!user) return false;
-        if (user.emailConfirmation?.isConfirmed) return false;
         if (user.emailConfirmation?.expirationDate! < new Date()) return false;
         return userRepository.updateUserConfirmStatus(user._id);
     },

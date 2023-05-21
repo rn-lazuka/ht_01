@@ -30,7 +30,7 @@ export const registrationConfirmationValidations = [
         if (!user) {
             throw new Error('No such user');
         }
-        if (!user?.emailConfirmation?.isConfirmed) {
+        if (user?.emailConfirmation?.isConfirmed) {
             throw new Error('User already confirmed');
         }
         return true;
