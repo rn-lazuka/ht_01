@@ -63,6 +63,7 @@ export const userRepository = {
         const users = await usersCollection.find().toArray();
         console.log(users[0].emailConfirmation);
         const result = await usersCollection.find({'emailConfirmation.confirmationCode': code}).toArray();
+        console.log('user',result[0]);
         return result.length > 0 ? result[0] : null;
     },
     async createUser(user: UserEntity) {
