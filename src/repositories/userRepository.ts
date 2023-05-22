@@ -40,15 +40,15 @@ export const userRepository = {
     },
     async updateUserConfirmStatus(id: ObjectId) {
         const result = await usersCollection.updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}});
-        return result.modifiedCount === 1
+        return result.modifiedCount === 1;
     },
     async updateUserConfirmationData(id: ObjectId, data: EmailConfirmation) {
-        const  {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}},{
+        const {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}}, {
             returnDocument: 'after'
         });
-        console.log('resend value',value);
-        console.log('new code',data);
-        return value ?  {
+        console.log('resend value', value);
+        console.log('new code', data);
+        return value ? {
             id: value._id.toString(),
             createdAt: value.createdAt,
             login: value.login,
@@ -60,9 +60,10 @@ export const userRepository = {
     },
     async findUserByConfirmationCode(code: string) {
         console.log({code});
-        const users = await usersCollection.find().toArray()
+        const users = await usersCollection.find().toArray();
         console.log(users[0].emailConfirmation);
-        return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+        const result = await usersCollection.find({'emailConfirmation.confirmationCode': code}).toArray();
+        return result.length > 0 ? result[0] : null;
     },
     async createUser(user: UserEntity) {
         const result = await usersCollection.insertOne(user);
