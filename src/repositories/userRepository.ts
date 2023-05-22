@@ -46,6 +46,8 @@ export const userRepository = {
         const  {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}},{
             returnDocument: 'after'
         });
+        console.log('resend value',value);
+        console.log('new code',data);
         return value ?  {
             id: value._id.toString(),
             createdAt: value.createdAt,
@@ -53,7 +55,7 @@ export const userRepository = {
             email: value.email,
             passwordHash: value.passwordHash,
             passwordSalt: value.passwordSalt,
-            emailConfirmation: value.emailConfirmation
+            emailConfirmation: data
         } : null;
     },
     async findUserByConfirmationCode(code: string) {
