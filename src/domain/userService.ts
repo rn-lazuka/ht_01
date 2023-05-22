@@ -63,6 +63,7 @@ export const userService = {
         const createResult = await userRepository.createUser(newUser);
         try {
             const result = await mailService.sendEmailConfirmationCode(createResult);
+            console.log('registration', createResult.emailConfirmation?.confirmationCode);
             return result ? createResult : null;
         } catch (e) {
             console.error(e);

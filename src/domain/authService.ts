@@ -3,6 +3,7 @@ import {userService} from './userService';
 
 export const authService = {
     async confirmEmail(code: string) {
+        console.log('confirmation', code);
         const user = await userService.findUserByConfirmationCode(code);
         if (!user) return false;
         if (user.emailConfirmation?.expirationDate! < new Date()) return false;

@@ -9,7 +9,6 @@ import {inputValidationMiddleware} from '../utils/validateErrors';
 import {userService} from '../domain/userService';
 import {jwtService} from '../application/jwtService';
 import {authMiddleware} from '../middlewares/authMiddleware';
-import {emailAdapter} from '../adapters/emailAdapter';
 import {authService} from '../domain/authService';
 
 export const authRouter = Router();
