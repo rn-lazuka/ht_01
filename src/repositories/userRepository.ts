@@ -61,7 +61,7 @@ export const userRepository = {
     async findUserByConfirmationCode(code: string) {
         console.log({code});
         const users = await usersCollection.find().toArray()
-        console.log({users});
+        console.log(users[0].emailConfirmation);
         return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
     },
     async createUser(user: UserEntity) {
