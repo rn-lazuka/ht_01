@@ -60,7 +60,7 @@ export const userRepository = {
     },
     async findUserByConfirmationCode(code: string) {
         console.log({code});
-        const users = await usersCollection.find()
+        const users = await usersCollection.find().toArray()
         console.log({users});
         return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
     },
