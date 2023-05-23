@@ -46,8 +46,6 @@ export const userRepository = {
         const {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}}, {
             returnDocument: 'after'
         });
-        console.log('resend value', value);
-        console.log('new code', data);
         return value ? {
             id: value._id.toString(),
             createdAt: value.createdAt,
@@ -59,12 +57,7 @@ export const userRepository = {
         } : null;
     },
     async findUserByConfirmationCode(code: string) {
-        console.log({code});
-        const users = await usersCollection.find().toArray();
-        console.log(users[0].emailConfirmation);
-        const result = await usersCollection.find({'emailConfirmation.confirmationCode': code}).toArray();
-        console.log('user',result[0]);
-        return result.length > 0 ? result[0] : null;
+        return  await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
     },
     async createUser(user: UserEntity) {
         const result = await usersCollection.insertOne(user);

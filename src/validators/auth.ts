@@ -26,9 +26,7 @@ export const registrationValidations = [
 
 export const registrationConfirmationValidations = [
     body('code').isString().trim().notEmpty().custom(async (value) => {
-
         const user = await userRepository.findUserByConfirmationCode(value);
-        console.log('user validation', user)
         if (!user) {
             throw new Error('No such user');
         }
