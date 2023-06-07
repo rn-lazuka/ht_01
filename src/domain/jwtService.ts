@@ -6,7 +6,7 @@ import {userService} from './userService';
 import {authRepository} from '../repositories/authRepository';
 
 export const jwtService = {
-    async createJWT(user: User, expirationTime: string) {
+    createJWT(user: User, expirationTime: string) {
         return jwt.sign({userId: user.id}, JWT_SECRET, {expiresIn: expirationTime});
     },
     async getUserIdByToken(token: string) {
@@ -29,14 +29,16 @@ export const jwtService = {
             const jwtPayload = jwt.verify(refreshToken, JWT_SECRET) as JwtPayload;
             const user = await userService.findUserById(jwtPayload.userId);
             const isTokenActive = await authRepository.isRefreshTokenActive(refreshToken);
-            return !(!user || !isTokenActive);
+            if (!user || !isTokenActive) return null;
+            return user;
         } catch (e) {
-            return false;
+            return null;
         }
     },
     async changeTokensByRefreshToken(refreshToken: string) {
         try {
-            if (await this.checkIsTokenValid(refreshToken)) return null;
+            const user = await this.checkIsTokenValid(refreshToken);
+            if (!user) return null;
             await this.deactivateRefreshToken(refreshToken);
             const accessToken = jwtService.createJWT(user, '10s');
             const newRefreshToken = jwtService.createJWT(user, '20s');
