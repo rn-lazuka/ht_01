@@ -36,7 +36,16 @@ export const userRepository = {
         };
     },
     async findUserById(id: ObjectId) {
-        return await usersCollection.findOne({_id: id});
+        const result = await usersCollection.findOne({_id: id});
+        return result ? {
+            id: result._id.toString(),
+            createdAt: result.createdAt,
+            login: result.login,
+            email: result.email,
+            passwordHash: result.passwordHash,
+            passwordSalt: result.passwordSalt,
+            emailConfirmation: result.emailConfirmation
+        } : null;
     },
     async updateUserConfirmStatus(id: ObjectId) {
         const result = await usersCollection.updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}});
@@ -57,7 +66,7 @@ export const userRepository = {
         } : null;
     },
     async findUserByConfirmationCode(code: string) {
-        return  await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+        return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
     },
     async createUser(user: UserEntity) {
         const result = await usersCollection.insertOne(user);

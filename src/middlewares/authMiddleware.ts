@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
-import {jwtService} from '../application/jwtService';
+import {jwtService} from '../domain/jwtService';
 import {userService} from '../domain/userService';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {

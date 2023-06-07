@@ -1,5 +1,6 @@
 import {userRepository} from '../repositories/userRepository';
 import {userService} from './userService';
+import {jwtService} from './jwtService';
 
 export const authService = {
     async confirmEmail(code: string) {
@@ -12,5 +13,14 @@ export const authService = {
         const user = await userRepository.findUserByLoginOrEmail(email);
         if (!user) return false;
         return await userService.resendEmailConfirmation(user);
+    },
+    async loginUser(loginOrEmail: string, password: string) {
+        const user = await userService.checkCredentials(loginOrEmail, password);
+        if (user) {
+            const accessToken = jwtService.createJWT(user, '10s');
+            const refreshToken = jwtService.createJWT(user, '20s');
+            return {accessToken, refreshToken};
+        }
+        return null;
     }
 };

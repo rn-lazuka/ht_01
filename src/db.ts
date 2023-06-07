@@ -2,6 +2,7 @@ import {MongoClient} from 'mongodb';
 import {Blog, Post, UserEntity} from './types';
 import dotenv from 'dotenv'
 import {CommentEntity} from './types';
+import {RefreshToken} from './types/Token';
 
 dotenv.config()
 
@@ -15,6 +16,7 @@ export const postsCollection = db.collection<Omit<Post, 'id'>>('posts', {});
 export const blogsCollection = db.collection<Omit<Blog, 'id'>>('blogs');
 export const usersCollection = db.collection<UserEntity>('users');
 export const commentsCollection = db.collection<CommentEntity>('comments');
+export const refreshTokensCollection = db.collection<RefreshToken>('refreshTokens');
 
 export async function runDB() {
     try {
