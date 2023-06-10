@@ -1,7 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {
     authValidations,
-    refreshValidation,
     registrationConfirmationValidations,
     registrationValidations,
     resendingEmailValidations
@@ -21,8 +20,9 @@ authRouter.post('/login', authValidations, inputValidationMiddleware, async (req
     }
     return res.sendStatus(401);
 });
-authRouter.post('/logout', authValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+authRouter.post('/logout', async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
+
     if (!refreshToken) {
         return res.sendStatus(401);
     }
