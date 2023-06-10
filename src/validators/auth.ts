@@ -6,10 +6,6 @@ export const authValidations = [
     body('password').isString().trim().notEmpty(),
 ];
 
-export const refreshValidation = [
-    body('accessToken').isString().trim().notEmpty()
-];
-
 export const registrationValidations = [
     body('login').isString().trim().notEmpty().isLength({
         min: 3,

@@ -34,7 +34,7 @@ authRouter.post('/logout', authValidations, inputValidationMiddleware, async (re
     return res.sendStatus(401)
 });
 
-authRouter.post('/refresh-token', refreshValidation, inputValidationMiddleware, async (req: Request, res: Response) => {
+authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         return res.sendStatus(401);
