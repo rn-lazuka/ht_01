@@ -24,7 +24,8 @@ export const userService = {
                     isConfirmed: true,
                 }
             };
-            return userRepository.createUser(newUser);
+            const createdUser = await userRepository.createUser(newUser);
+            return userRepository._mapDbUserToOutputModel(createdUser)
         } catch (e) {
             return null;
         }

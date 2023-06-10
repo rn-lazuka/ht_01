@@ -16,7 +16,6 @@ export const authRouter = Router();
 authRouter.post('/login', authValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const result = await authService.loginUser(req.body.loginOrEmail, req.body.password);
     if (result) {
-        debugger
         res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true});
         return res.status(200).json({accessToken: result.accessToken});
     }
