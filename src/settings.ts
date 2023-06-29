@@ -9,8 +9,6 @@ import {commentsRouter} from './routes/comments-router';
 import {securityRouter} from './routes/security-router';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import {apiRequestsInfoCounting} from './middlewares/apiRequestsInfo';
-import {apiRequestsRateMiddleware} from './middlewares/apiRequestsRateMiddleware';
 
 export const app = express();
 dotenv.config();
@@ -18,8 +16,6 @@ export const JWT_SECRET = process.env.JWT_SECRET || '123';
 
 app.use(express.json());
 app.use(cookieParser())
-app.use(apiRequestsInfoCounting)
-app.use(apiRequestsRateMiddleware)
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
 app.use('/videos', videoRouter);
