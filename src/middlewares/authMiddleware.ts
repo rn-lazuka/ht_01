@@ -1,4 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
+import { ObjectId } from 'mongodb';
 import {jwtService} from '../domain/jwtService';
 import {userService} from '../domain/userService';
 
@@ -9,7 +10,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const token = req.headers.authorization.split(' ')[1];
     const userId = await jwtService.getUserIdByToken(token);
     if (userId) {
-        req.user = await userService.findUserById(userId);
+        req.user = await userService.findUserById(new ObjectId(userId));
         return next();
     }
     return res.sendStatus(401)

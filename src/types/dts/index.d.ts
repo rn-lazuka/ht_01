@@ -7,3 +7,10 @@ declare global {
         }
     }
 }
+
+declare module "jsonwebtoken" {
+    export interface JwtPayload {
+        userId: string
+        deviceId?: string
+    }
+}

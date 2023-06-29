@@ -1,4 +1,3 @@
-import {User} from '../types';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {JWT_SECRET} from '../settings';
 import {ObjectId} from 'mongodb';
@@ -6,13 +5,20 @@ import {userService} from './userService';
 import {authRepository} from '../repositories/authRepository';
 
 export const jwtService = {
-    createJWT(user: User, expirationTime: string) {
-        return jwt.sign({userId: user.id}, JWT_SECRET, {expiresIn: expirationTime});
+    createJWT(userId: string, expirationTime: string, deviceId?: string) {
+        return jwt.sign({userId, deviceId}, JWT_SECRET, {expiresIn: expirationTime});
     },
     async getUserIdByToken(token: string) {
         try {
-            const result: any = jwt.verify(token, JWT_SECRET);
-            return new ObjectId(result.userId);
+            const result = jwt.verify(token, JWT_SECRET) as JwtPayload;
+            return result.userId;
+        } catch (e) {
+            return null;
+        }
+    },
+    async getTokenPayload(token: string) {
+        try {
+            return jwt.verify(token, JWT_SECRET) as JwtPayload;
         } catch (e) {
             return null;
         }
@@ -30,7 +36,7 @@ export const jwtService = {
             const user = await userService.findUserById(new ObjectId(jwtPayload.userId));
             const isTokenActive = await authRepository.isRefreshTokenActive(refreshToken);
             if (!user || !isTokenActive) return null;
-            return user;
+            return jwtPayload;
         } catch (e) {
             console.log(e);
             return null;
@@ -38,11 +44,11 @@ export const jwtService = {
     },
     async changeTokensByRefreshToken(refreshToken: string) {
         try {
-            const user = await this.checkIsTokenValid(refreshToken);
-            if (!user) return null;
+            const jwtPayload = await this.checkIsTokenValid(refreshToken);
+            if (!jwtPayload) return null;
             await this.deactivateRefreshToken(refreshToken);
-            const accessToken = jwtService.createJWT(user, '10s');
-            const newRefreshToken = jwtService.createJWT(user, '20s');
+            const accessToken = jwtService.createJWT(jwtPayload.userId!, '10s');
+            const newRefreshToken = jwtService.createJWT(jwtPayload.userId, '20s', jwtPayload.deviceId);
             return {accessToken, refreshToken: newRefreshToken};
         } catch (error) {
             console.error(error);

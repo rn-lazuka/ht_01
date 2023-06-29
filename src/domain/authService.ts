@@ -1,6 +1,7 @@
 import {userRepository} from '../repositories/userRepository';
 import {userService} from './userService';
 import {jwtService} from './jwtService';
+import {v4 as uuid} from 'uuid';
 
 export const authService = {
     async confirmEmail(code: string) {
@@ -17,8 +18,8 @@ export const authService = {
     async loginUser(loginOrEmail: string, password: string) {
         const user = await userService.checkCredentials(loginOrEmail, password);
         if (user) {
-            const accessToken = jwtService.createJWT(user, '10s');
-            const refreshToken = jwtService.createJWT(user, '20s');
+            const accessToken = jwtService.createJWT(user.id, '10s');
+            const refreshToken = jwtService.createJWT(user.id, '20s', uuid());
             return {accessToken, refreshToken};
         }
         return null;

@@ -1,5 +1,5 @@
 import {MongoClient} from 'mongodb';
-import {Blog, Post, UserEntity} from './types';
+import {ApiRequestInfo, Blog, Device, Post, UserEntity} from './types';
 import dotenv from 'dotenv'
 import {CommentEntity} from './types';
 import {RefreshToken} from './types/Token';
@@ -17,6 +17,8 @@ export const blogsCollection = db.collection<Omit<Blog, 'id'>>('blogs');
 export const usersCollection = db.collection<UserEntity>('users');
 export const commentsCollection = db.collection<CommentEntity>('comments');
 export const refreshTokensCollection = db.collection<RefreshToken>('refreshTokens');
+export const devicesCollection = db.collection<Device>('devices');
+export const apiRequestsCollection = db.collection<ApiRequestInfo>('apiRequests');
 
 export async function runDB() {
     try {
