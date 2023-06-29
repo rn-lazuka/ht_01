@@ -1,6 +1,5 @@
-import {Pagination, Sorting, User, UserEntity, UserDBType, EmailConfirmation, Device, DeviceDbType} from '../types';
-import {devicesCollection, usersCollection} from '../db';
-import {ObjectId} from 'mongodb';
+import {Device, DeviceDbType} from '../types';
+import {devicesCollection} from '../db';
 
 export const devicesRepository = {
     async getAllDevicesByUserId(userId: string) {
@@ -12,19 +11,22 @@ export const devicesRepository = {
     },
     async deleteAllOtherDevices(userId: string, deviceId: string) {
         try {
-            const result = await devicesCollection.deleteMany({ userId, deviceId: { $ne: deviceId } });
-            return result.deletedCount > 0
-        } catch (e){
-            return false
+            const result = await devicesCollection.deleteMany({userId, deviceId: {$ne: deviceId}});
+            return result.deletedCount > 0;
+        } catch (e) {
+            return false;
         }
     },
     async deleteDeviceById(userId: string, deviceId: string) {
         try {
-            const result = await devicesCollection.deleteMany({ deviceId, userId });
-            return result.deletedCount > 0
-        } catch (e){
-            return false
+            const result = await devicesCollection.deleteMany({deviceId, userId});
+            return result.deletedCount > 0;
+        } catch (e) {
+            return false;
         }
+    },
+    async clearAllDevices() {
+        return await devicesCollection.deleteMany({});
     },
     _mapDbDeviceToOutputModel(device: DeviceDbType): Device {
         return {
