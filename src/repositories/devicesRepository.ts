@@ -2,6 +2,10 @@ import {Device, DeviceDbType} from '../types';
 import {devicesCollection} from '../db';
 
 export const devicesRepository = {
+    async addDevice(deviceInfo: Omit<DeviceDbType, '_id'>) {
+        const result = await devicesCollection.insertOne(deviceInfo);
+        return this._mapDbDeviceToOutputModel({...deviceInfo, _id: result.insertedId});
+    },
     async getAllDevicesByUserId(userId: string) {
         const devices = await devicesCollection.find({userId}).toArray();
         return devices.map((device) => this._mapDbDeviceToOutputModel(device));

@@ -10,11 +10,15 @@ import {userService} from '../domain/userService';
 import {jwtService} from '../domain/jwtService';
 import {authMiddleware} from '../middlewares/authMiddleware';
 import {authService} from '../domain/authService';
+import {deviceService} from '../domain/deviceService';
+import {apiRequestsInfoMiddleware} from '../middlewares/apiRequestsInfoMiddleware';
+import {apiRequestsRateMiddleware} from '../middlewares/apiRequestsRateMiddleware';
 
 export const authRouter = Router();
-authRouter.post('/login', authValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+authRouter.post('/login', apiRequestsInfoMiddleware, apiRequestsRateMiddleware, authValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const result = await authService.loginUser(req.body.loginOrEmail, req.body.password);
     if (result) {
+        await deviceService.addDevice(req.socket.remoteAddress || 'unknown', req.headers['user-agent'] || 'unknown', result.userId, result.refreshToken)
         res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true});
         return res.status(200).json({accessToken: result.accessToken});
     }
@@ -54,7 +58,7 @@ authRouter.get('/me', authMiddleware, async (req: Request, res: Response) => {
     return res.sendStatus(401);
 });
 
-authRouter.post('/registration', registrationValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+authRouter.post('/registration',apiRequestsInfoMiddleware, apiRequestsRateMiddleware, registrationValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const result = await userService.createUser({
         email: req.body.email,
         login: req.body.login,
@@ -68,7 +72,7 @@ authRouter.post('/registration-confirmation', registrationConfirmationValidation
     return result ? res.sendStatus(204) : res.sendStatus(400);
 });
 
-authRouter.post('/registration-email-resending', resendingEmailValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+authRouter.post('/registration-email-resending',apiRequestsInfoMiddleware, apiRequestsRateMiddleware, resendingEmailValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const result = await authService.resendEmailConfirmation(req.body.email);
     return result ? res.sendStatus(204) : res.sendStatus(400);
 });

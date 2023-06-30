@@ -20,7 +20,7 @@ export const authService = {
         if (user) {
             const accessToken = jwtService.createJWT(user.id, '10s');
             const refreshToken = jwtService.createJWT(user.id, '20s', uuid());
-            return {accessToken, refreshToken};
+            return {accessToken, refreshToken, userId:user.id};
         }
         return null;
     }

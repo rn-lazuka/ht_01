@@ -5,6 +5,7 @@ export interface Device {
     title: string;
     lastActiveDate: string;
     deviceId: string;
+    expDate?: string;
     userId?: string;
 }
 
