@@ -8,5 +8,8 @@ export const apiRequestInfoRepository = {
     },
     async getRequestsInfoByFilter({URL, IP, date}: ApiRequestInfo) {
         return await apiRequestsCollection.find({IP, URL, date: {$gte: date}}).toArray();
+    },
+    async clearRequestsInfo() {
+        return await apiRequestsCollection.deleteMany({})
     }
 };

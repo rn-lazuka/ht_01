@@ -5,6 +5,7 @@ import {postsRepository} from '../repositories/postsRepository';
 import {userRepository} from '../repositories/userRepository';
 import {commentsRepository} from '../repositories/commentsRepository';
 import {devicesRepository} from '../repositories/devicesRepository';
+import {apiRequestInfoRepository} from '../repositories/apiRequestInfoRepository';
 
 export const testRouter = Router();
 
@@ -15,5 +16,6 @@ testRouter.delete('/', (req, res) => {
     userRepository.clearAllUsers();
     commentsRepository.clearAllComments();
     devicesRepository.clearAllDevices();
+    apiRequestInfoRepository.clearRequestsInfo();
     res.sendStatus(204);
 });
