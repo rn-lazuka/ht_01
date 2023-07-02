@@ -81,7 +81,7 @@ authRouter.post('/registration', apiRequestsInfoMiddleware, apiRequestsRateMiddl
     return result ? res.sendStatus(204) : res.sendStatus(400);
 });
 
-authRouter.post('/registration-confirmation', registrationConfirmationValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+authRouter.post('/registration-confirmation',apiRequestsInfoMiddleware, apiRequestsRateMiddleware, registrationConfirmationValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const result = await authService.confirmEmail(req.body.code);
     return result ? res.sendStatus(204) : res.sendStatus(400);
 });

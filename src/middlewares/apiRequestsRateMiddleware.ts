@@ -17,8 +17,8 @@ export const apiRequestsRateMiddleware = async (req: Request, res: Response, nex
                 return res.status(429).send('More than 5 attempts from one IP-address during 10 seconds');
             }
         } catch (e) {
-            res.sendStatus(500);
+            return res.sendStatus(500);
         }
     }
-    next();
+    return next();
 };
