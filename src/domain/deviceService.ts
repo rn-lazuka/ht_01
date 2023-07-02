@@ -12,8 +12,8 @@ export const deviceService = {
                 title,
                 userId,
                 deviceId: tokenPayload.deviceId!,
-                lastActiveDate: new Date(tokenPayload.iat!).toString(),
-                expDate: +new Date(tokenPayload.exp!).toString()
+                lastActiveDate: `${tokenPayload.iat!}`,
+                expDate: `${tokenPayload.exp!}`
             };
             return await devicesRepository.addDevice(deviceInfo);
         }

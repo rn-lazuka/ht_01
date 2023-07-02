@@ -10,8 +10,8 @@ export const devicesRepository = {
     async updateDeviceInfo(tokenPayload: JwtPayload) {
         const result = await devicesCollection.findOneAndUpdate({deviceId: tokenPayload.deviceId}, {
             $set: {
-                lastActiveDate: new Date(tokenPayload.iat!).toString(),
-                expDate: new Date(tokenPayload.exp!).toString()
+                lastActiveDate: `${tokenPayload.iat!}`,
+                expDate: `${tokenPayload.exp!}`
             }
         });
         return result.ok === 1;
