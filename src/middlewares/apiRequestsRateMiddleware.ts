@@ -8,7 +8,7 @@ export const apiRequestsRateMiddleware = async (req: Request, res: Response, nex
         const requestInfoFilter: ApiRequestInfo = {
             IP: ip,
             URL: req.originalUrl,
-            date: new Date(Date.now() - 10000).toISOString() // отнимаю 10 сек.
+            date: new Date(Date.now() - 10000) // отнимаю 10 сек.
         };
         try {
             const documentsInfoRequests = await apiRequestInfoService.getRequestsInfoByFilter(requestInfoFilter);

@@ -3,9 +3,9 @@ import {ObjectId} from 'mongodb';
 export interface Device {
     ip: string;
     title: string;
-    lastActiveDate: string;
+    lastActiveDate: Date;
     deviceId: string;
-    expDate?: string;
+    expDate?: Date;
     userId?: string;
 }
 

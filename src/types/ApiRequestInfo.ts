@@ -3,7 +3,7 @@ import {ObjectId} from 'mongodb';
 export interface ApiRequestInfo {
     IP: string;
     URL: string;
-    date: string;
+    date: Date;
 }
 
 export interface ApiRequestInfoDBType extends ApiRequestInfo {
