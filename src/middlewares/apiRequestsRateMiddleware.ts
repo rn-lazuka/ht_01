@@ -14,11 +14,11 @@ export const apiRequestsRateMiddleware = async (req: Request, res: Response, nex
             const documentsInfoRequests = await apiRequestInfoService.getRequestsInfoByFilter(requestInfoFilter);
             if (documentsInfoRequests.length > 5) {
 
-                return res.status(429).send('More than 5 attempts from one IP-address during 10 seconds');
+                res.status(429).send('More than 5 attempts from one IP-address during 10 seconds');
             }
         } catch (e) {
-            return res.sendStatus(500);
+            res.sendStatus(500);
         }
     }
-    return next();
+    next();
 };

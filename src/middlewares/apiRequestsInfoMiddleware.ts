@@ -11,10 +11,10 @@ export const apiRequestsInfoMiddleware = async (req: Request, res: Response, nex
             date: new Date()
         };
         try {
-            return await apiRequestInfoService.saveRequestInfo(apiRequestInfo);
+             await apiRequestInfoService.saveRequestInfo(apiRequestInfo);
         } catch (e) {
             console.error(e);
         }
     }
-    return next();
+    next();
 };
