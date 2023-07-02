@@ -32,8 +32,15 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
     }
     const isTokenValid = await jwtService.checkIsTokenValid(refreshToken);
     if (isTokenValid) {
-        const result = await jwtService.deactivateRefreshToken(refreshToken);
-        return result ? res.sendStatus(204) : res.sendStatus(401);
+        const tokenPayload = await jwtService.getTokenPayload(refreshToken);
+        if (tokenPayload) {
+            const isDeviceDeleted = await deviceService.deleteDeviceById(tokenPayload.userId, tokenPayload.deviceId!);
+            if (isDeviceDeleted) {
+                const result = await jwtService.deactivateRefreshToken(refreshToken);
+                return result ? res.sendStatus(204) : res.sendStatus(401);
+            }
+        }
+        return res.sendStatus(500);
     }
     return res.sendStatus(401);
 });
