@@ -14,7 +14,7 @@ export const apiRequestsRateMiddleware = async (req: Request, res: Response, nex
             const documentsInfoRequests = await apiRequestInfoService.getRequestsInfoByFilter(requestInfoFilter);
             if (documentsInfoRequests.length > 5) {
 
-                res.status(429).send('More than 5 attempts from one IP-address during 10 seconds');
+                return res.status(429).send('More than 5 attempts from one IP-address during 10 seconds');
             }
         } catch (e) {
             res.sendStatus(500);
