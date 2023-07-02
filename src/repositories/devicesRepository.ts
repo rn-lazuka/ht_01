@@ -1,10 +1,20 @@
 import {Device, DeviceDbType} from '../types';
 import {devicesCollection} from '../db';
+import {JwtPayload} from 'jsonwebtoken';
 
 export const devicesRepository = {
     async addDevice(deviceInfo: Omit<DeviceDbType, '_id'>) {
         const result = await devicesCollection.insertOne(deviceInfo);
         return this._mapDbDeviceToOutputModel({...deviceInfo, _id: result.insertedId});
+    },
+    async updateDeviceInfo(tokenPayload: JwtPayload) {
+        const result = await devicesCollection.findOneAndUpdate({deviceId: tokenPayload.deviceId}, {
+            $set: {
+                lastActiveDate: new Date(tokenPayload.iat!).toISOString(),
+                expDate: new Date(tokenPayload.exp!).toISOString()
+            }
+        });
+        return result.ok === 1;
     },
     async getAllDevicesByUserId(userId: string) {
         const devices = await devicesCollection.find({userId}).toArray();
