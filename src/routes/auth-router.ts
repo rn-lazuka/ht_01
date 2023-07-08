@@ -97,6 +97,6 @@ authRouter.post('/password-recovery', apiRequestsInfoMiddleware, apiRequestsRate
 });
 
 authRouter.post('/new-password',apiRequestsInfoMiddleware, apiRequestsRateMiddleware, newPasswordValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
-    const result = await userService.confirmNewPassword(req.body.recoveryCode, req.body.password);
+    const result = await userService.confirmNewPassword(req.body.recoveryCode, req.body.newPassword);
     return result ? res.sendStatus(204) : res.send('RecoveryCode is incorrect or expired').status(400);
 });

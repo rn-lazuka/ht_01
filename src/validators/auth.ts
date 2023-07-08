@@ -58,6 +58,6 @@ export const passwordRecoveryValidations = [
 ];
 
 export const newPasswordValidations = [
-    body('password').isString().trim().notEmpty().isLength({min: 6, max: 20}),
+    body('newPassword').isString().trim().notEmpty().isLength({min: 6, max: 20}),
     body('recoveryCode').isString().trim().notEmpty(),
 ];

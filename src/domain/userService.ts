@@ -60,11 +60,11 @@ export const userService = {
             return true;
         }
     },
-    async confirmNewPassword(recoveryCode: string, password: string) {
+    async confirmNewPassword(recoveryCode: string, newPassword: string) {
         const user = await userRepository.findUserByPasswordRecoveryCode(recoveryCode);
         if (user && user.recoveryData?.isValid) {
             const isExpired = user.recoveryData?.expirationDate! < new Date();
-            const passHash = await bcrypt.hash(password, user.passwordSalt!);
+            const passHash = await bcrypt.hash(newPassword, user.passwordSalt!);
             const newPassData = isExpired
                 ? {recoveryData: {isValid: false}}
                 : {
