@@ -12,10 +12,10 @@ export interface Commentator {
     userLogin: string;
 }
 
-export interface Comment extends Omit<CommentEntity, 'postId'> {
+export interface CommentType extends CommentEntity {
     id: string;
 }
 
-export interface CommentDBType extends Omit<Comment,'id'> {
+export interface CommentDBType extends Omit<CommentType,'id'> {
     _id: ObjectId;
 }

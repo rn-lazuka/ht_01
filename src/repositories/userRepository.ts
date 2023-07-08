@@ -1,108 +1,108 @@
-import {Pagination, Sorting, User, UserEntity, UserDBType, EmailConfirmation} from '../types';
-import {usersCollection} from '../db';
-import {ObjectId} from 'mongodb';
+import {EmailConfirmation, Pagination, RecoveryData, Sorting, UserDBType, UserEntity} from '../types';
+import {User} from '../models/user';
+import {v4 as uuid} from 'uuid';
 
 export interface UserSearchTerm {
     searchLoginTerm: string | null;
     searchEmailTerm: string | null;
 }
 
+export interface PassDataForUpdate {
+    passwordHash?: string;
+    recoveryData: {
+        recoveryCode?: string;
+        isValid: boolean;
+    }
+}
+
 export const userRepository = {
-    async getUsers(pagination: Pagination, sorting: Sorting, searchTerm: UserSearchTerm) {
+    async getUsers(pagination: Pagination, sorting: Sorting, searchTerm: UserSearchTerm): Promise<{
+        pagesCount: number;
+        page: number;
+        pageSize: number;
+        totalCount: number;
+        items: UserEntity[]
+    }> {
         const {pageSize, page} = pagination;
-        const filter: any = {};
-        if (searchTerm.searchEmailTerm || searchTerm.searchLoginTerm) {
-            filter.$or = [];
-            if (searchTerm.searchEmailTerm) {
-                filter.$or.push({email: {$regex: searchTerm.searchEmailTerm, $options: 'i'}});
-            }
-            if (searchTerm.searchLoginTerm) {
-                filter.$or.push({login: {$regex: searchTerm.searchLoginTerm, $options: 'i'}});
-            }
+
+        const usersQuery = User.find();
+        const filter = {} as any;
+
+        if (searchTerm.searchEmailTerm && searchTerm.searchEmailTerm !== '') {
+            filter.email = {$regex: new RegExp(searchTerm.searchEmailTerm, 'i')};
         }
 
-        const sortOptions: any = {};
-        sortOptions[sorting.sortBy] = sorting.sortDirection === 'asc' ? 1 : -1;
-        const totalCount = await usersCollection.countDocuments(filter);
+        if (searchTerm.searchLoginTerm && searchTerm.searchLoginTerm !== '') {
+            filter.login = {$regex: new RegExp(searchTerm.searchLoginTerm, 'i')};
+        }
+
+        if (Object.keys(filter).length > 0) {
+            usersQuery.where(filter);
+        }
+        const totalCount = await usersQuery.countDocuments();
         const pagesCount = Math.ceil(totalCount / pageSize);
-        const skip = (page - 1) * pageSize;
-        const users = await usersCollection.find(filter).sort(sortOptions).skip(skip).limit(pageSize).toArray();
+
+        const users = await usersQuery
+            .sort({[sorting.sortBy]: sorting.sortDirection === 'asc' ? 1 : -1})
+            .skip((page - 1) * pageSize)
+            .limit(pageSize)
+            .populate('createdAt', 'login', 'email')
+            .lean();
+
         return {
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: users.map((user) => this._mapDbUserToOutputModel(user))
+            items: users,
         };
     },
-    async findUserById(id: ObjectId) {
-        const result = await usersCollection.findOne({_id: id});
-        return result ? {
-            id: result._id.toString(),
-            createdAt: result.createdAt,
-            login: result.login,
-            email: result.email,
-            passwordHash: result.passwordHash,
-            passwordSalt: result.passwordSalt,
-            emailConfirmation: result.emailConfirmation
-        } : null;
+    async findUserById(id: string): Promise<UserEntity | null> {
+        const result = await User.findById(id);
+        return result ? result.toObject({virtuals: true}) : null;
     },
-    async updateUserConfirmStatus(id: ObjectId) {
-        const result = await usersCollection.updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}});
-        return result.modifiedCount === 1;
+    async updateUserConfirmStatus(id: string): Promise<UserEntity | null> {
+        const result = await User.findByIdAndUpdate(id, {'emailConfirmation.isConfirmed': true}, {new: true});
+        return result;
     },
-    async updateUserConfirmationData(id: ObjectId, data: EmailConfirmation) {
-        const {value} = await usersCollection.findOneAndUpdate({_id: id}, {$set: {emailConfirmation: data}}, {
-            returnDocument: 'after'
-        });
-        return value ? {
-            id: value._id.toString(),
-            createdAt: value.createdAt,
-            login: value.login,
-            email: value.email,
-            passwordHash: value.passwordHash,
-            passwordSalt: value.passwordSalt,
-            emailConfirmation: data
-        } : null;
+    async updateUserConfirmationData(id: string, data: EmailConfirmation) {
+        const result = await User.findByIdAndUpdate(id, {emailConfirmation: data}, {new: true});
+        return result;
+    },
+    async updateUserPasswordData(id: string, data: PassDataForUpdate) {
+        const result = await User.findByIdAndUpdate(id, data, {new: true});
+        return result;
+    },
+    async updateUserRecoveryData(id: string, data: RecoveryData) {
+        const result = await User.findByIdAndUpdate(id, {recoveryData: data}, {new: true});
+        return result;
     },
     async findUserByConfirmationCode(code: string) {
-        return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+        const result = await User.findOne({'emailConfirmation.confirmationCode': code});
+        return result;
     },
     async createUser(user: UserEntity) {
-        const result = await usersCollection.insertOne(user);
-        const UserDBType: UserDBType = {
-            ...user, _id: result.insertedId
-        };
-        return UserDBType;
+        let newUser = new User(user);
+        newUser = await newUser.save();
+        return newUser;
     },
     async deleteUser(id: string) {
-        try {
-            const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
-            return result.deletedCount === 1;
-        } catch (e) {
-            return null;
-        }
+        const result = await User.findByIdAndDelete(id);
+        return result;
     },
-    async findUserByLoginOrEmail(loginOrEmail: string): Promise<User | null> {
-        try {
-            const result = await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]});
-            return result ? {
-                id: result._id.toString(),
-                createdAt: result.createdAt,
-                login: result.login,
-                email: result.email,
-                passwordHash: result.passwordHash,
-                passwordSalt: result.passwordSalt,
-                emailConfirmation: result.emailConfirmation
-            } : null;
-        } catch (e) {
-            return null;
-        }
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserEntity | null> {
+        const result = await User.findOne()
+            .or([{login: loginOrEmail}, {email: loginOrEmail}]);
+        return result;
+    },
+    async findUserByPasswordRecoveryCode(recoveryCode: string): Promise<UserEntity | null> {
+        const result = await User.findOne({'recoveryData.recoveryCode':recoveryCode})
+        return result;
     },
     async clearAllUsers() {
-        await usersCollection.deleteMany({});
+        await User.deleteMany({});
     },
-    _mapDbUserToOutputModel(user: UserDBType): User {
+    _mapDbUserToOutputModel(user: UserDBType): UserEntity {
         return {
             id: user._id.toString(),
             createdAt: user.createdAt,

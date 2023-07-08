@@ -38,7 +38,7 @@ postsRouter.post('/:id/comments', authMiddleware, commentsValidations,inputValid
     const comment = await postsService.createComment({
         postId: req.params.id,
         content: req.body.content,
-        userId: req.user!.id,
+        userId: req.user?.id!,
         userLogin: req.user!.login,
     });
     return comment ? res.status(201).json(comment) : res.sendStatus(404);

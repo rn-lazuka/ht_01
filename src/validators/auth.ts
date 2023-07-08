@@ -52,3 +52,12 @@ export const resendingEmailValidations = [
         return true;
     }),
 ];
+
+export const passwordRecoveryValidations = [
+    body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+];
+
+export const newPasswordValidations = [
+    body('password').isString().trim().notEmpty().isLength({min: 6, max: 20}),
+    body('recoveryCode').isString().trim().notEmpty(),
+];

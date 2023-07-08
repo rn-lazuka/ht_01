@@ -1,7 +1,6 @@
-import {CommentEntity, Post} from '../types';
-import { commentsCollection, postsCollection} from '../db';
-import {ObjectId} from 'mongodb';
-import {commentsRepository} from './commentsRepository';
+import {CommentEntity, PostType} from '../types';
+import {Post} from '../models/post';
+import {Comment} from '../models/comment';
 
 export interface GetCommentProps {
     postId: string;
@@ -13,31 +12,31 @@ export interface GetCommentProps {
 
 export const postsRepository = {
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
-        const totalCount = await postsCollection.countDocuments();
+        const postQuery = Post.find();
+        const totalCount = await postQuery.countDocuments();
         const pagesCount = Math.ceil(totalCount / pageSize);
-        const skip = (page - 1) * pageSize;
-        const sortOptions: any = {};
-        sortOptions[sortBy] = sortDirection === 'asc' ? 1 : -1;
-        const posts = await postsCollection.find().sort(sortOptions).skip(skip).limit(pageSize).toArray();
+        const posts = await postQuery
+            .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
+            .skip((page - 1) * pageSize)
+            .limit(pageSize)
+            .lean();
+
         return {
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: posts.map(post => this._mapDbPostToOutputModel(post))
+            items: posts
         };
     },
     async getPostById(id: string) {
-        try {
-            const result = await postsCollection.findOne({_id: new ObjectId(id)});
-            return this._mapDbPostToOutputModel(result);
-        } catch (e) {
-            return null;
-        }
+        const result = await Post.findByIdAndUpdate(id);
+        return result;
     },
-    async createPost(post: Omit<Post, 'id'>) {
-        const result = await postsCollection.insertOne(post);
-        return this._mapDbPostToOutputModel({_id: result.insertedId, ...post});
+    async createPost(post: Omit<PostType, 'id'>) {
+        let newPost = new Post(post);
+        newPost = await newPost.save();
+        return newPost;
     },
     async getCommentsByPostId({
                                   postId,
@@ -46,49 +45,41 @@ export const postsRepository = {
                                   page = 1,
                                   pageSize = 10
                               }: GetCommentProps) {
-        try {
-            const filter = {postId}
-            const totalCount = await commentsCollection.countDocuments(filter);
-            const pagesCount = Math.ceil(totalCount / pageSize);
-            const skip = (page - 1) * pageSize;
-            const sortOptions: any = {};
-            sortOptions[sortBy] = sortDirection === 'asc' ? 1 : -1;
-            const comments = await commentsCollection.find(filter).sort(sortOptions).skip(skip).limit(pageSize).toArray();
-            return {
-                pagesCount,
-                page,
-                pageSize,
-                totalCount,
-                items: comments.map(comment => commentsRepository._mapDbCommentToOutputModel(comment)),
-            };
-        } catch (e) {
-            return null;
-        }
+        const commentQuery = Comment.find({postId});
+        const totalCount = await commentQuery.countDocuments();
+        const pagesCount = Math.ceil(totalCount / pageSize);
+        const comments = await commentQuery
+            .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
+            .skip((page - 1) * pageSize)
+            .limit(pageSize)
+            .select('-postId')
+            .lean();
+
+        return {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items: comments,
+        };
     },
     async addComment(comment: CommentEntity) {
-        const result = await commentsCollection.insertOne(comment);
-        return commentsRepository._mapDbCommentToOutputModel({...comment, _id: result.insertedId});
+        let newComment = new Comment(comment);
+        newComment = await newComment.save()
+        return newComment
     },
-    async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
-        try {
-            const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedPost});
-            return result.matchedCount === 1;
-        } catch (e) {
-            return null;
-        }
+    async updatePost(id: string, updatedPost: Omit<PostType, 'blogName'>) {
+        const result = await Post.findByIdAndUpdate(id, updatedPost);
+        return result;
     },
     async deletePost(id: string) {
-        try {
-            const result = await postsCollection.deleteOne({_id: new ObjectId(id)});
-            return result.deletedCount === 1;
-        } catch (e) {
-            return null;
-        }
+        const result = await Post.findByIdAndDelete(id);
+        return result;
     },
     async clearAllPosts() {
-        await postsCollection.deleteMany({});
+        await Post.deleteMany({});
     },
-    _mapDbPostToOutputModel(post: any): Post {
+    _mapDbPostToOutputModel(post: any): PostType {
         return {
             id: post._id.toString(),
             blogName: post.blogName,

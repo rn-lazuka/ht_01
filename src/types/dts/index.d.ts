@@ -1,9 +1,9 @@
-import {User} from '../User';
+import {UserEntity} from '../UserType';
 
 declare global {
     namespace Express {
         export interface Request {
-            user: User | null
+            user: UserEntity | null
         }
     }
 }

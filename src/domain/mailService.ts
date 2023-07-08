@@ -7,5 +7,13 @@ export const mailService = {
         <a href="https://somesite.com/confirm-email?code=${user.emailConfirmation?.confirmationCode}">complete registration</a></p></div>`;
         const info = await emailAdapter.sendMail(user.email, 'Confirmation code', mail);
         return info ? info : null;
+    },
+    async sendPasswordRecoveryCode(user: UserEntity) {
+        const mail = `<h1>Password recovery</h1>
+        <p>To finish password recovery please follow the link below:
+          <a href='https://somesite.com/password-recovery?recoveryCode=${user.recoveryData?.recoveryCode}'>recovery password</a>
+        </p>`
+        const info = await emailAdapter.sendMail(user.email, 'Recovery code', mail);
+        return info ? info : true;
     }
 };

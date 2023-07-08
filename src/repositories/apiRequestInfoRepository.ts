@@ -1,15 +1,19 @@
 import {ApiRequestInfo} from '../types';
-import {apiRequestsCollection} from '../db';
+import {ApiRequest} from '../models/apiRequests';
+
 
 export const apiRequestInfoRepository = {
     async saveRequestInfo(apiRequest: ApiRequestInfo) {
-        const result = await apiRequestsCollection.insertOne(apiRequest);
-        return {...apiRequest, id: result.insertedId};
+        let newRequest = new ApiRequest(apiRequest);
+        newRequest = await newRequest.save()
+        return newRequest
     },
     async getRequestsInfoByFilter({URL, IP, date}: ApiRequestInfo) {
-        return await apiRequestsCollection.find({IP, URL, date: {$gte: date}}).toArray();
+        const result = await ApiRequest.find({IP, URL, date: {$gte: date}})
+        return result
     },
     async clearRequestsInfo() {
-        return await apiRequestsCollection.deleteMany({})
+        const result = await ApiRequest.deleteMany({})
+        return result.deletedCount > 0
     }
 };

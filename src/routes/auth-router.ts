@@ -1,6 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {
-    authValidations,
+    authValidations, newPasswordValidations, passwordRecoveryValidations,
     registrationConfirmationValidations,
     registrationValidations,
     resendingEmailValidations
@@ -89,4 +89,14 @@ authRouter.post('/registration-confirmation',apiRequestsInfoMiddleware, apiReque
 authRouter.post('/registration-email-resending', apiRequestsInfoMiddleware, apiRequestsRateMiddleware, resendingEmailValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
     const result = await authService.resendEmailConfirmation(req.body.email);
     return result ? res.sendStatus(204) : res.sendStatus(400);
+});
+
+authRouter.post('/password-recovery', apiRequestsInfoMiddleware, apiRequestsRateMiddleware, passwordRecoveryValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+    await authService.passwordRecovery(req.body.email);
+    return res.sendStatus(204)
+});
+
+authRouter.post('/new-password',apiRequestsInfoMiddleware, apiRequestsRateMiddleware, newPasswordValidations, inputValidationMiddleware, async (req: Request, res: Response) => {
+    const result = await userService.confirmNewPassword(req.body.recoveryCode, req.body.password);
+    return result ? res.sendStatus(204) : res.send('RecoveryCode is incorrect or expired').status(400);
 });

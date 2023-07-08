@@ -1,4 +1,4 @@
-import {Post} from '../types';
+import {PostType} from '../types';
 import {blogRepository} from '../repositories/blogRepository';
 import {postsRepository} from '../repositories/postsRepository';
 
@@ -16,7 +16,7 @@ export const postsService = {
     async getPostById(id: string) {
         return await postsRepository.getPostById(id);
     },
-    async createPost(post: Omit<Post, 'id' | 'blogName'>) {
+    async createPost(post: Omit<PostType, 'id' | 'blogName'>) {
         const blog = await blogRepository.getBlogById(post.blogId);
         const newPost = {
             ...post,
@@ -44,7 +44,7 @@ export const postsService = {
         };
         return await postsRepository.addComment(newComment);
     },
-    async updatePost(id: string, updatedPost: Omit<Post, 'blogName'>) {
+    async updatePost(id: string, updatedPost: Omit<PostType, 'blogName'>) {
         return await postsRepository.updatePost(id, updatedPost);
     },
     async deletePost(id: string) {

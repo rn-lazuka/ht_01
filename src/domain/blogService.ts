@@ -1,4 +1,4 @@
-import {Blog} from '../types';
+import {BlogType} from '../types';
 import {blogRepository} from '../repositories/blogRepository';
 
 export const blogService = {
@@ -11,7 +11,7 @@ export const blogService = {
     getBlogById(id: string) {
         return blogRepository.getBlogById(id);
     },
-    createBlog(blog: Omit<Blog, 'id'>) {
+    createBlog(blog: Omit<BlogType, 'id'>) {
         const newBlog = {
             ...blog,
             createdAt: new Date().toISOString(),
@@ -19,7 +19,7 @@ export const blogService = {
         };
         return blogRepository.createBlog(newBlog);
     },
-    updateBlog(id: string, updatedBlog: Blog) {
+    updateBlog(id: string, updatedBlog: BlogType) {
         return blogRepository.updateBlog(id, updatedBlog);
     },
     deleteBlog(id: string) {

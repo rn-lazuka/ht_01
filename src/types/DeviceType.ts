@@ -1,6 +1,6 @@
 import {ObjectId} from 'mongodb';
 
-export interface Device {
+export interface DeviceType {
     ip: string;
     title: string;
     lastActiveDate: string;
@@ -9,6 +9,6 @@ export interface Device {
     userId?: string;
 }
 
-export interface DeviceDbType extends Device {
+export interface DeviceDbType extends DeviceType {
     _id: ObjectId;
 }

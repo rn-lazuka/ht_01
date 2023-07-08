@@ -1,6 +1,6 @@
 import {ObjectId} from 'mongodb';
 
-export interface Post {
+export interface PostType {
     id: string;
     title: string;
     shortDescription: string;
@@ -10,6 +10,6 @@ export interface Post {
     createdAt: string;
 }
 
-export interface PostWithId extends Omit<Post,'id'> {
+export interface PostDBType extends Omit<PostType,'id'> {
     _id: ObjectId;
 }

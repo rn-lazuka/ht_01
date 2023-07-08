@@ -1,6 +1,5 @@
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {JWT_SECRET} from '../settings';
-import {ObjectId} from 'mongodb';
 import {userService} from './userService';
 import {authRepository} from '../repositories/authRepository';
 
@@ -33,7 +32,7 @@ export const jwtService = {
     async checkIsTokenValid(refreshToken: string) {
         try {
             const jwtPayload = jwt.verify(refreshToken, JWT_SECRET) as JwtPayload;
-            const user = await userService.findUserById(new ObjectId(jwtPayload.userId));
+            const user = await userService.findUserById(jwtPayload.userId);
             const isTokenActive = await authRepository.isRefreshTokenActive(refreshToken);
             if (!user || !isTokenActive) return null;
             return jwtPayload;

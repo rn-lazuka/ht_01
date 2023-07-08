@@ -1,41 +1,20 @@
-import {commentsCollection} from '../db';
-import {ObjectId} from 'mongodb';
-import {Comment, CommentDBType} from '../types';
+import {CommentType} from '../types';
+import {Comment} from '../models/comment';
 
 export const commentsRepository = {
     async getCommentById(id: string) {
-        try {
-            const result = await commentsCollection.findOne({_id: new ObjectId(id)});
-            return result ? this._mapDbCommentToOutputModel(result) : null;
-        } catch (e) {
-            return null;
-        }
+        const result = await Comment.findById(id).select('-postId');
+        return result;
     },
-    async updateComment(id: string, updatedComment: Comment) {
-        try {
-            const result = await commentsCollection.updateOne({_id: new ObjectId(id)}, {$set: updatedComment});
-            return result.matchedCount === 1;
-        } catch (e) {
-            return null;
-        }
+    async updateComment(id: string, updatedComment: CommentType) {
+        const result = await Comment.findByIdAndUpdate(id, updatedComment);
+        return result;
     },
     async deleteComment(id: string) {
-        try {
-            const result = await commentsCollection.deleteOne({_id: new ObjectId(id)});
-            return result.deletedCount === 1;
-        } catch (e) {
-            return null;
-        }
+        const result = await Comment.findByIdAndDelete(id);
+        return result;
     },
     async clearAllComments() {
-        return await commentsCollection.deleteMany({});
+        await Comment.deleteMany({});
     },
-    _mapDbCommentToOutputModel(comment: CommentDBType): Comment {
-        return {
-            id: comment._id.toString(),
-            createdAt: comment.createdAt,
-            commentatorInfo: comment.commentatorInfo,
-            content: comment.content
-        };
-    }
 };

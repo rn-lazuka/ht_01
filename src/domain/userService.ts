@@ -1,7 +1,6 @@
-import {NewUserData, Pagination, Sorting, User, UserEntity} from '../types';
+import {NewUserData, Pagination, Sorting, UserEntity} from '../types';
 import bcrypt from 'bcrypt';
 import {userRepository, UserSearchTerm} from '../repositories/userRepository';
-import {ObjectId} from 'mongodb';
 import {v4 as uuid} from 'uuid';
 import {add} from 'date-fns';
 import {mailService} from './mailService';
@@ -25,26 +24,60 @@ export const userService = {
                 }
             };
             const createdUser = await userRepository.createUser(newUser);
-            return userRepository._mapDbUserToOutputModel(createdUser)
+            return userRepository._mapDbUserToOutputModel(createdUser);
         } catch (e) {
             return null;
         }
     },
-    async resendEmailConfirmation(user: User) {
+    async resendEmailConfirmation(user: UserEntity) {
         const confirmationData = {
             confirmationCode: uuid(),
             isConfirmed: false,
             expirationDate: add(new Date(), {hours: 1, minutes: 3})
         };
 
-        const updatedUser = await userRepository.updateUserConfirmationData(new ObjectId(user.id), confirmationData);
-        if(!updatedUser) return false;
+        const updatedUser = await userRepository.updateUserConfirmationData(user.id!, confirmationData);
+        if (!updatedUser) return false;
         try {
             const result = await mailService.sendEmailConfirmationCode(updatedUser);
             return result ? updatedUser : null;
         } catch (e) {
             return null;
         }
+    },
+    async passwordRecovery(user: UserEntity) {
+        const recoveryData = {
+            recoveryCode: uuid(),
+            isValid: true,
+            expirationDate: add(new Date(), {hours: 24})
+        };
+        const updatedUser = await userRepository.updateUserRecoveryData(user.id!, recoveryData);
+        if (!updatedUser) return true;
+        try {
+            const result = await mailService.sendPasswordRecoveryCode(updatedUser);
+            return result;
+        } catch (e) {
+            return true;
+        }
+    },
+    async confirmNewPassword(recoveryCode: string, password: string) {
+        const user = await userRepository.findUserByPasswordRecoveryCode(recoveryCode);
+        if (user && user.recoveryData?.isValid) {
+            const isExpired = user.recoveryData?.expirationDate! < new Date();
+            const passHash = await bcrypt.hash(password, user.passwordSalt!);
+            const newPassData = isExpired
+                ? {recoveryData: {isValid: false}}
+                : {
+                    passwordHash: passHash,
+                    recoveryData: {
+                        recoveryCode: uuid(),
+                        isValid: false,
+                    }
+                };
+            const updateResult = await userRepository.updateUserPasswordData(user.id!, newPassData);
+            return isExpired ? null : updateResult;
+        }
+        return null;
     },
     async createUser(user: NewUserData) {
         const passSalt = await bcrypt.genSalt(10);
@@ -71,7 +104,7 @@ export const userService = {
             return null;
         }
     },
-    async findUserById(id: ObjectId) {
+    async findUserById(id: string) {
         return userRepository.findUserById(id);
     },
     async findUserByConfirmationCode(code: string) {

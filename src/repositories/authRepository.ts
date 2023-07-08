@@ -1,13 +1,15 @@
-import {refreshTokensCollection} from '../db';
-import { RefreshToken } from '../types/Token';
+import {RefreshToken} from '../models/refreshToken';
+import {RefreshTokenType} from '../types';
 
 export const authRepository = {
-    async deactivateRefreshToken(refreshObject: RefreshToken) {
-        return await refreshTokensCollection.insertOne(refreshObject);
+    async deactivateRefreshToken(refreshObject: RefreshTokenType) {
+        let newToken = new RefreshToken(refreshObject);
+        newToken = await newToken.save();
+        return newToken;
     },
 
     async isRefreshTokenActive(refreshToken: string): Promise<boolean> {
-        const token = await refreshTokensCollection.findOne({refreshToken: refreshToken});
-        return !token;
+        const result = await RefreshToken.findOne({refreshToken: refreshToken});
+        return !result;
     }
 };

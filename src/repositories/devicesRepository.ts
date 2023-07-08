@@ -1,48 +1,49 @@
-import {Device, DeviceDbType} from '../types';
-import {devicesCollection} from '../db';
+import {DeviceType, DeviceDbType} from '../types';
 import {JwtPayload} from 'jsonwebtoken';
+import {Device} from '../models/device';
 
 export const devicesRepository = {
-    async addDevice(deviceInfo: Omit<DeviceDbType, '_id'>) {
-        const result = await devicesCollection.insertOne(deviceInfo);
-        return this._mapDbDeviceToOutputModel({...deviceInfo, _id: result.insertedId});
+    async addDevice(deviceInfo: DeviceType) {
+        let newDevice = new Device(deviceInfo);
+        newDevice = await newDevice.save();
+        return this._mapDbDeviceToOutputModel(newDevice);
     },
     async updateDeviceInfo(tokenPayload: JwtPayload) {
-        const result = await devicesCollection.findOneAndUpdate({deviceId: tokenPayload.deviceId}, {
-            $set: {
-                lastActiveDate: new Date(tokenPayload.iat!).toISOString(),
-                expDate: new Date(tokenPayload.exp!).toISOString()
-            }
+        const result = await Device.findOneAndUpdate({deviceId: tokenPayload.deviceId}, {
+            lastActiveDate: new Date(tokenPayload.iat!).toISOString(),
+            expDate: new Date(tokenPayload.exp!).toISOString()
         });
-        return result.ok === 1;
+        return result
     },
     async getAllDevicesByUserId(userId: string) {
-        const devices = await devicesCollection.find({userId}).toArray();
+        const devices = await Device.find({userId});
         return devices.map((device) => this._mapDbDeviceToOutputModel(device));
     },
     async getDeviceById(deviceId: string) {
-        return await devicesCollection.findOne({deviceId});
+        const result = await Device.findOne({deviceId});
+        return result
     },
     async deleteAllOtherDevices(userId: string, deviceId: string) {
         try {
-            const result = await devicesCollection.deleteMany({userId, deviceId: {$ne: deviceId}});
-            return result.deletedCount > 0;
+            const result = await Device.deleteMany({userId, deviceId: {$ne: deviceId}});
+            return result.deletedCount > 0
         } catch (e) {
             return false;
         }
     },
     async deleteDeviceById(userId: string, deviceId: string) {
         try {
-            const result = await devicesCollection.deleteMany({deviceId, userId});
+            const result = await Device.deleteMany({deviceId, userId});
             return result.deletedCount > 0;
         } catch (e) {
             return false;
         }
     },
     async clearAllDevices() {
-        return await devicesCollection.deleteMany({});
+        const result = await Device.deleteMany({});
+        return result.deletedCount > 0
     },
-    _mapDbDeviceToOutputModel(device: DeviceDbType): Device {
+    _mapDbDeviceToOutputModel(device: DeviceDbType): DeviceType {
         return {
             deviceId: device.deviceId,
             title: device.title,
