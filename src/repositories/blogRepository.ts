@@ -1,6 +1,7 @@
 import {BlobDBType, BlogType} from '../types';
 import {Blog} from '../models/blog';
 import {Post} from '../models/post';
+import {postsRepository} from './postsRepository';
 
 export const blogRepository = {
     async getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {
@@ -27,7 +28,7 @@ export const blogRepository = {
             page,
             pageSize,
             totalCount,
-            items: blogs
+            items: blogs.map(blog=>this._mapDbBlogToOutputModel(blog))
         };
     },
     async getBlogById(id: string) {
@@ -51,7 +52,7 @@ export const blogRepository = {
                 page,
                 pageSize,
                 totalCount,
-                items: posts
+                items: posts.map(post=>postsRepository._mapDbPostToOutputModel(post))
             }
     },
     async createBlog(blog: Omit<BlogType, 'id'>) {

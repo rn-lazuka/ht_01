@@ -1,6 +1,7 @@
 import {CommentEntity, PostType} from '../types';
 import {Post} from '../models/post';
 import {Comment} from '../models/comment';
+import {commentsRepository} from './commentsRepository';
 
 export interface GetCommentProps {
     postId: string;
@@ -26,7 +27,7 @@ export const postsRepository = {
             page,
             pageSize,
             totalCount,
-            items: posts
+            items: posts.map(post=>this._mapDbPostToOutputModel(post))
         };
     },
     async getPostById(id: string) {
@@ -52,7 +53,6 @@ export const postsRepository = {
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
             .skip((page - 1) * pageSize)
             .limit(pageSize)
-            .select('-postId')
             .lean();
 
         return {
@@ -60,7 +60,7 @@ export const postsRepository = {
             page,
             pageSize,
             totalCount,
-            items: comments,
+            items: comments.map(comment=>commentsRepository._mapDbCommentToOutputModel(comment)),
         };
     },
     async addComment(comment: CommentEntity) {

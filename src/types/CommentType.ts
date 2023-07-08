@@ -1,15 +1,15 @@
 import {ObjectId} from 'mongodb';
 
+export interface Commentator {
+    userId: string;
+    userLogin: string;
+}
+
 export interface CommentEntity {
     content: string;
     createdAt: string;
     commentatorInfo: Commentator;
-    postId: string;
-}
-
-export interface Commentator {
-    userId: string;
-    userLogin: string;
+    postId?: string;
 }
 
 export interface CommentType extends CommentEntity {

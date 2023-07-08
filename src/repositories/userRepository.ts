@@ -1,6 +1,7 @@
 import {EmailConfirmation, Pagination, RecoveryData, Sorting, UserDBType, UserEntity} from '../types';
 import {User} from '../models/user';
 import {v4 as uuid} from 'uuid';
+import {th} from 'date-fns/locale';
 
 export interface UserSearchTerm {
     searchLoginTerm: string | null;
@@ -25,7 +26,6 @@ export const userRepository = {
     }> {
         const {pageSize, page} = pagination;
 
-        const usersQuery = User.find();
         const filter = {} as any;
 
         if (searchTerm.searchEmailTerm && searchTerm.searchEmailTerm !== '') {
@@ -36,25 +36,22 @@ export const userRepository = {
             filter.login = {$regex: new RegExp(searchTerm.searchLoginTerm, 'i')};
         }
 
-        if (Object.keys(filter).length > 0) {
-            usersQuery.where(filter);
-        }
-        const totalCount = await usersQuery.countDocuments();
+        const usersQuery = User.find(filter);
+        const totalCount = await User.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize);
 
         const users = await usersQuery
             .sort({[sorting.sortBy]: sorting.sortDirection === 'asc' ? 1 : -1})
             .skip((page - 1) * pageSize)
             .limit(pageSize)
-            .populate('createdAt', 'login', 'email')
-            .lean();
+            .lean()
 
         return {
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: users,
+            items: users.map(user=>this._mapDbUserToOutputModel(user)),
         };
     },
     async findUserById(id: string): Promise<UserEntity | null> {
