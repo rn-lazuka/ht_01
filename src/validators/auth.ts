@@ -59,5 +59,11 @@ export const passwordRecoveryValidations = [
 
 export const newPasswordValidations = [
     body('newPassword').isString().trim().notEmpty().isLength({min: 6, max: 20}),
-    body('recoveryCode').isString().trim().notEmpty(),
+    body('recoveryCode').isString().trim().notEmpty().custom(async (value) => {
+        const user = await userRepository.findUserByPasswordRecoveryCode(value);
+        if (!user) {
+            throw new Error('Code is not valid');
+        }
+        return true;
+    }),
 ];
