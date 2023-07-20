@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import {UserDBType} from '../types';
 
-export const userSchema = new mongoose.Schema<UserDBType>({
+export const userSchema = new mongoose.Schema<UserDBType>({ //TODO: класс не работает с ts
     login: {type: String, required: true},
     email: {type: String, required: true},
     createdAt: {type: String, required: true},

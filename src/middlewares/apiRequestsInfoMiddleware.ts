@@ -1,17 +1,19 @@
 import {NextFunction, Request, Response} from 'express';
-import {ApiRequestInfo} from '../types';
-import {apiRequestInfoService} from '../domain/apiRequestInfoService';
+import {ApiRequestInfoDBType} from '../types';
+import {ObjectId} from 'mongodb';
+import { apiRequestInfoService } from '../compositionRoot';
 
 export const apiRequestsInfoMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const ip = req.socket.remoteAddress;
     if (ip) {
-        const apiRequestInfo: ApiRequestInfo = {
-            IP: ip,
-            URL: req.originalUrl,
-            date: new Date()
-        };
+        const apiRequestInfo = new ApiRequestInfoDBType(
+            new ObjectId(),
+            ip,
+            req.originalUrl,
+            new Date()
+        );
         try {
-             await apiRequestInfoService.saveRequestInfo(apiRequestInfo);
+            await apiRequestInfoService.saveRequestInfo(apiRequestInfo);
         } catch (e) {
             console.error(e);
         }

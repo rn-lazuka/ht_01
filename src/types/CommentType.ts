@@ -5,17 +5,25 @@ export interface Commentator {
     userLogin: string;
 }
 
-export interface CommentEntity {
+export interface CommentType {
+    id: string;
     content: string;
     createdAt: string;
     commentatorInfo: Commentator;
     postId?: string;
 }
 
-export interface CommentType extends CommentEntity {
-    id: string;
-}
+// export interface CommentDBType extends Omit<CommentType,'id'> {
+//     _id: ObjectId;
+// }
 
-export interface CommentDBType extends Omit<CommentType,'id'> {
-    _id: ObjectId;
+export class CommentDBType {
+    constructor(
+        public _id: ObjectId,
+        public content: string,
+        public commentatorInfo: Commentator,
+        public createdAt: string,
+        public postId?: string,
+    ) {
+    }
 }

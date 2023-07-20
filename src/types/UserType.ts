@@ -31,6 +31,18 @@ export interface UserEntity {
     recoveryData?: RecoveryData;
 }
 
-export interface UserDBType extends UserEntity {
-    _id: ObjectId;
+// export interface UserDBType extends UserEntity {
+//     _id: ObjectId;
+// }
+
+export class UserDBType {
+    constructor(public _id: ObjectId,
+                public login: string,
+                public email: string,
+                public createdAt: string,
+                public passwordHash?: string,
+                public passwordSalt?: string,
+                public emailConfirmation?: EmailConfirmation,
+                public recoveryData?: RecoveryData) {
+    }
 }

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import {BlobDBType} from '../types';
+import {BlogDBType} from '../types';
 
-export const blogSchema = new mongoose.Schema<BlobDBType>({
+export const blogSchema = new mongoose.Schema<BlogDBType>({
     name: String,
     description: String,
     websiteUrl: String,
@@ -10,9 +10,9 @@ export const blogSchema = new mongoose.Schema<BlobDBType>({
 });
 
 blogSchema.virtual('id').get(function () {
-    return this._id.toHexString()
-})
+    return this._id.toHexString();
+});
 
-blogSchema.set('toJSON', { virtuals: true })
+blogSchema.set('toJSON', {virtuals: true});
 
-export const Blog = mongoose.model('blog', blogSchema)
+export const Blog = mongoose.model('blog', blogSchema);

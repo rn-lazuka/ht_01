@@ -1,11 +1,15 @@
-import {ApiRequestInfo} from '../types';
-import {apiRequestInfoRepository} from '../repositories/apiRequestInfoRepository';
+import {ApiRequestInfo, ApiRequestInfoDBType} from '../types';
+import {ApiRequestInfoRepository} from '../repositories/apiRequestInfoRepository';
 
-export const apiRequestInfoService = {
-    async saveRequestInfo(requestInfo: ApiRequestInfo) {
-        return apiRequestInfoRepository.saveRequestInfo(requestInfo);
-    },
+export class ApiRequestInfoService {
+    constructor(protected apiRequestInfoRepository: ApiRequestInfoRepository) {
+    }
+
+    async saveRequestInfo(requestInfo: ApiRequestInfoDBType) {
+        return this.apiRequestInfoRepository.saveRequestInfo(requestInfo);
+    }
+
     async getRequestsInfoByFilter(requestInfoFilter: ApiRequestInfo) {
-        return apiRequestInfoRepository.getRequestsInfoByFilter(requestInfoFilter);
-    },
+        return this.apiRequestInfoRepository.getRequestsInfoByFilter(requestInfoFilter);
+    }
 };

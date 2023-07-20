@@ -6,6 +6,12 @@ export interface ApiRequestInfo {
     date: Date;
 }
 
-export interface ApiRequestInfoDBType extends ApiRequestInfo {
-    _id: ObjectId;
+export class ApiRequestInfoDBType {
+    constructor(
+        public _id: ObjectId,
+        public IP: string,
+        public URL: string,
+        public date: Date
+    ) {
+    }
 }

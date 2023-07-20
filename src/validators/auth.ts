@@ -1,5 +1,5 @@
 import {body} from 'express-validator';
-import {userRepository} from '../repositories/userRepository';
+import {userService} from '../compositionRoot';
 
 export const authValidations = [
     body('loginOrEmail').isString().trim().notEmpty(),
@@ -11,7 +11,7 @@ export const registrationValidations = [
         min: 3,
         max: 10
     }).matches(/^[a-zA-Z0-9_-]*$/).custom(async (value) => {
-        const login = await userRepository.findUserByLoginOrEmail(value);
+        const login = await userService.findUserByLoginOrEmail(value);
         if (login) {
             throw new Error('Login already exist');
         }
@@ -19,7 +19,7 @@ export const registrationValidations = [
     }),
     body('password').isString().trim().notEmpty().isLength({min: 6, max: 20}),
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value) => {
-        const email = await userRepository.findUserByLoginOrEmail(value);
+        const email = await userService.findUserByLoginOrEmail(value);
         if (email) {
             throw new Error('Email already exist');
         }
@@ -29,7 +29,7 @@ export const registrationValidations = [
 
 export const registrationConfirmationValidations = [
     body('code').isString().trim().notEmpty().custom(async (value) => {
-        const user = await userRepository.findUserByConfirmationCode(value);
+        const user = await userService.findUserByConfirmationCode(value);
         if (!user) {
             throw new Error('No such user');
         }
@@ -42,7 +42,7 @@ export const registrationConfirmationValidations = [
 
 export const resendingEmailValidations = [
     body('email').isString().trim().notEmpty().matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/).custom(async (value) => {
-        const user = await userRepository.findUserByLoginOrEmail(value);
+        const user = await userService.findUserByLoginOrEmail(value);
         if (!user) {
             throw new Error('No user with such email');
         }
@@ -60,7 +60,7 @@ export const passwordRecoveryValidations = [
 export const newPasswordValidations = [
     body('newPassword').isString().trim().notEmpty().isLength({min: 6, max: 20}),
     body('recoveryCode').isString().trim().notEmpty().custom(async (value) => {
-        const user = await userRepository.findUserByPasswordRecoveryCode(value);
+        const user = await userService.findUserByPasswordRecoveryCode(value);
         if (!user) {
             throw new Error('Code is not valid');
         }

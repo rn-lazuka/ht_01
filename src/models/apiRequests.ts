@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import {ApiRequestInfo} from '../types';
+import {ApiRequestInfoDBType} from '../types';
 
-export const apiRequestsSchema = new mongoose.Schema<ApiRequestInfo>({
+export const apiRequestsSchema = new mongoose.Schema<ApiRequestInfoDBType>({
     IP: String,
     URL: String,
     date: Date

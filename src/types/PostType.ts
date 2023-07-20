@@ -10,6 +10,18 @@ export interface PostType {
     createdAt: string;
 }
 
-export interface PostDBType extends Omit<PostType,'id'> {
-    _id: ObjectId;
+// export interface PostDBType extends Omit<PostType,'id'> {
+//     _id: ObjectId;
+// }
+
+export class PostDBType {
+    constructor(
+        public _id: ObjectId,
+        public title: string,
+        public shortDescription: string,
+        public content: string,
+        public blogId: string,
+        public blogName: string,
+        public createdAt: string) {
+    }
 }

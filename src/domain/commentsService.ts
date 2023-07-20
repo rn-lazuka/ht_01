@@ -1,14 +1,16 @@
-import {commentsRepository} from '../repositories/commentsRepository';
+import {CommentRepository} from '../repositories/commentsRepository';
 import {CommentType} from '../types';
 
-export const commentsService = {
-    getCommentById(id: string) {
-        return commentsRepository.getCommentById(id);
-    },
-    updateComment(id: string, comment: CommentType) {
-        return commentsRepository.updateComment(id, comment);
-    },
-    deleteComment(id: string) {
-        return commentsRepository.deleteComment(id);
+export class CommentService  {
+    constructor(protected commentRepository: CommentRepository) {
     }
-};
+    getCommentById(id: string) {
+        return this.commentRepository.getCommentById(id);
+    }
+    updateComment(id: string, comment: CommentType) {
+        return this.commentRepository.updateComment(id, comment);
+    }
+    deleteComment(id: string) {
+        return this.commentRepository.deleteComment(id);
+    }
+}

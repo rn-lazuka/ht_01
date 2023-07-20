@@ -1,6 +1,7 @@
-import {PostType} from '../types';
-import {blogRepository} from '../repositories/blogRepository';
-import {postsRepository} from '../repositories/postsRepository';
+import {CommentDBType, PostDBType, PostType} from '../types';
+import {BlogRepository} from '../repositories/blogRepository';
+import {PostRepository} from '../repositories/postsRepository';
+import {ObjectId} from 'mongodb';
 
 export interface CreateCommentProps {
     postId: string;
@@ -9,45 +10,46 @@ export interface CreateCommentProps {
     userLogin: string;
 }
 
-export const postsService = {
+export class PostService {
+    constructor(protected postRepository: PostRepository, protected blogRepository: BlogRepository) {
+    }
+
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
-        return postsRepository.getPosts(page, pageSize, sortBy, sortDirection);
-    },
+        return this.postRepository.getPosts(page, pageSize, sortBy, sortDirection);
+    }
+
     async getPostById(id: string) {
-        return await postsRepository.getPostById(id);
-    },
+        return await this.postRepository.getPostById(id);
+    }
+
     async createPost(post: Omit<PostType, 'id' | 'blogName'>) {
-        const blog = await blogRepository.getBlogById(post.blogId);
-        const newPost = {
-            ...post,
-            blogName: blog?.name!,
-            createdAt: new Date().toISOString(),
-        };
-        return await postsRepository.createPost(newPost);
-    },
+        const blog = await this.blogRepository.getBlogById(post.blogId);
+        const newPost = new PostDBType(new ObjectId(), post.title, post.shortDescription, post.content, post.blogId, blog?.name!, new Date().toISOString());
+        return await this.postRepository.createPost(newPost);
+    }
+
     async getCommentsByPostId(postId: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
-        const post = await postsRepository.getPostById(postId)
-        if(!post) return null
-        return postsRepository.getCommentsByPostId({postId, page, pageSize, sortBy, sortDirection});
-    },
+        const post = await this.postRepository.getPostById(postId);
+        if (!post) return null;
+        return this.postRepository.getCommentsByPostId({postId, page, pageSize, sortBy, sortDirection});
+    }
+
     async createComment(props: CreateCommentProps) {
-        const  post =  await postsRepository.getPostById(props.postId)
-        if(!post) return null
-        const newComment = {
-            postId: props.postId,
-            content: props.content,
-            commentatorInfo: {
-                userId: props.userId,
-                userLogin: props.userLogin
-            },
-            createdAt: new Date().toISOString(),
+        const post = await this.postRepository.getPostById(props.postId);
+        if (!post) return null;
+        const commentatorInfo = {
+            userId: props.userId,
+            userLogin: props.userLogin
         };
-        return await postsRepository.addComment(newComment);
-    },
+        const newComment = new CommentDBType(new ObjectId(), props.content, commentatorInfo, new Date().toISOString(), props.postId);
+        return await this.postRepository.addComment(newComment);
+    }
+
     async updatePost(id: string, updatedPost: Omit<PostType, 'blogName'>) {
-        return await postsRepository.updatePost(id, updatedPost);
-    },
+        return await this.postRepository.updatePost(id, updatedPost);
+    }
+
     async deletePost(id: string) {
-        return await postsRepository.deletePost(id);
-    },
-};
+        return await this.postRepository.deletePost(id);
+    }
+}

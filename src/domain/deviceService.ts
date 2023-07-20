@@ -1,37 +1,33 @@
-import {devicesRepository} from '../repositories/devicesRepository';
-import {jwtService} from './jwtService';
-import {DeviceDbType} from '../types';
+import {DeviceRepository} from '../repositories/devicesRepository';
+import {JwtService} from './jwtService';
+import {DeviceDBType} from '../types';
 import {JwtPayload} from 'jsonwebtoken';
+import {ObjectId} from 'mongodb';
 
-export const deviceService = {
+export class DeviceService  {
+    constructor(protected deviceRepository: DeviceRepository, protected jwtService: JwtService) {
+    }
     async addDevice(ip: string, title: string, userId: string, refreshToken: string) {
-        const tokenPayload = await jwtService.getTokenPayload(refreshToken);
+        const tokenPayload = await this.jwtService.getTokenPayload(refreshToken);
         if (tokenPayload) {
-            const deviceInfo: Omit<DeviceDbType, '_id'> = {
-                ip,
-                title,
-                userId,
-                deviceId: tokenPayload.deviceId!,
-                lastActiveDate: new Date(tokenPayload.iat!).toISOString(),
-                expDate: new Date(tokenPayload.exp!).toISOString()
-            };
-            return await devicesRepository.addDevice(deviceInfo);
+            const deviceInfo = new DeviceDBType(new ObjectId(), ip, title, new Date(tokenPayload.iat!).toISOString(), tokenPayload.deviceId!, new Date(tokenPayload.exp!).toISOString(), userId);
+            return await this.deviceRepository.addDevice(deviceInfo);
         }
         return null;
-    },
+    }
     async updateDeviceInfo(tokenPayload: JwtPayload) {
-        return await devicesRepository.updateDeviceInfo(tokenPayload);
-    },
+        return await this.deviceRepository.updateDeviceInfo(tokenPayload);
+    }
     async getDeviceById(deviceId: string) {
-        return await devicesRepository.getDeviceById(deviceId);
-    },
+        return await this.deviceRepository.getDeviceById(deviceId);
+    }
     async getAllDevicesByUserId(id: string) {
-        return await devicesRepository.getAllDevicesByUserId(id);
-    },
+        return await this.deviceRepository.getAllDevicesByUserId(id);
+    }
     async deleteAllOtherDevices(userId: string, deviceId: string) {
-        return await devicesRepository.deleteAllOtherDevices(userId, deviceId);
-    },
+        return await this.deviceRepository.deleteAllOtherDevices(userId, deviceId);
+    }
     async deleteDeviceById(userId: string, deviceId: string) {
-        return await devicesRepository.deleteDeviceById(userId, deviceId);
-    },
-};
+        return await this.deviceRepository.deleteDeviceById(userId, deviceId);
+    }
+}

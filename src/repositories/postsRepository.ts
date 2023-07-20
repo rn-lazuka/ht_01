@@ -1,7 +1,6 @@
-import {CommentEntity, PostType} from '../types';
+import {CommentDBType, PostType} from '../types';
 import {Post} from '../models/post';
 import {Comment} from '../models/comment';
-import {commentsRepository} from './commentsRepository';
 
 export interface GetCommentProps {
     postId: string;
@@ -11,7 +10,7 @@ export interface GetCommentProps {
     sortDirection?: 'asc' | 'desc';
 }
 
-export const postsRepository = {
+export class PostRepository {
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const postQuery = Post.find();
         const totalCount = await postQuery.countDocuments();
@@ -29,16 +28,16 @@ export const postsRepository = {
             totalCount,
             items: posts.map(post=>this._mapDbPostToOutputModel(post))
         };
-    },
+    }
     async getPostById(id: string) {
         const result = await Post.findByIdAndUpdate(id);
         return result;
-    },
+    }
     async createPost(post: Omit<PostType, 'id'>) {
         let newPost = new Post(post);
         newPost = await newPost.save();
         return newPost;
-    },
+    }
     async getCommentsByPostId({
                                   postId,
                                   sortBy = 'createdAt',
@@ -60,25 +59,30 @@ export const postsRepository = {
             page,
             pageSize,
             totalCount,
-            items: comments.map(comment=>commentsRepository._mapDbCommentToOutputModel(comment)),
+            items: comments.map(comment=>({
+                id: comment._id.toString(),
+                createdAt: comment.createdAt,
+                commentatorInfo: comment.commentatorInfo,
+                content: comment.content
+            })),
         };
-    },
-    async addComment(comment: CommentEntity) {
+    }
+    async addComment(comment: CommentDBType) {
         let newComment = new Comment(comment);
         newComment = await newComment.save()
         return newComment
-    },
+    }
     async updatePost(id: string, updatedPost: Omit<PostType, 'blogName'>) {
         const result = await Post.findByIdAndUpdate(id, updatedPost);
         return result;
-    },
+    }
     async deletePost(id: string) {
         const result = await Post.findByIdAndDelete(id);
         return result;
-    },
+    }
     async clearAllPosts() {
         await Post.deleteMany({});
-    },
+    }
     _mapDbPostToOutputModel(post: any): PostType {
         return {
             id: post._id.toString(),

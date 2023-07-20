@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import {DeviceType} from '../types';
+import {DeviceDBType, DeviceType} from '../types';
 
-export const deviceSchema = new mongoose.Schema<DeviceType>({
+export const deviceSchema = new mongoose.Schema<DeviceDBType>({
     ip: String,
     title: String,
     lastActiveDate: String,

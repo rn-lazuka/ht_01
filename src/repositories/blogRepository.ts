@@ -1,9 +1,8 @@
-import {BlobDBType, BlogType} from '../types';
+import {BlogDBType, BlogType} from '../types';
 import {Blog} from '../models/blog';
 import {Post} from '../models/post';
-import {postsRepository} from './postsRepository';
 
-export const blogRepository = {
+export class BlogRepository {
     async getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {
         const blogQuery = Blog.find();
         const filter: any = {};
@@ -28,51 +27,66 @@ export const blogRepository = {
             page,
             pageSize,
             totalCount,
-            items: blogs.map(blog=>this._mapDbBlogToOutputModel(blog))
+            items: blogs.map(blog => this._mapDbBlogToOutputModel(blog))
         };
-    },
+    }
+
     async getBlogById(id: string) {
         const result = await Blog.findById(id);
         return result;
-    },
+    }
+
     async getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
-            const postQuery = Post.find({blogId: id})
+        const postQuery = Post.find({blogId: id});
 
-            const totalCount = await postQuery.countDocuments();
-            const pagesCount = Math.ceil(totalCount / pageSize);
+        const totalCount = await postQuery.countDocuments();
+        const pagesCount = Math.ceil(totalCount / pageSize);
 
-            const posts = await postQuery
-                .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
-                .skip((page - 1) * pageSize)
-                .limit(pageSize)
-                .lean();
+        const posts = await postQuery
+            .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
+            .skip((page - 1) * pageSize)
+            .limit(pageSize)
+            .lean();
 
-            return {
-                pagesCount,
-                page,
-                pageSize,
-                totalCount,
-                items: posts.map(post=>postsRepository._mapDbPostToOutputModel(post))
-            }
-    },
-    async createBlog(blog: Omit<BlogType, 'id'>) {
+        return {
+            pagesCount,
+            page,
+            pageSize,
+            totalCount,
+            items: posts.map(post => ({
+                id: post._id.toString(),
+                blogName: post.blogName,
+                createdAt: post.createdAt,
+                blogId: post.blogId,
+                content: post.content,
+                title: post.title,
+                shortDescription: post.shortDescription,
+            }))
+        };
+    }
+
+    async createBlog(blog: BlogDBType) {
         let newBlog = new Blog(blog);
         newBlog = await newBlog.save();
         return newBlog;
-    },
+    }
+
     async updateBlog(id: string, updatedBlog: BlogType) {
         const result = await Blog.findByIdAndUpdate(id, updatedBlog);
         return result;
-    },
+    }
+
     async deleteBlog(id: string) {
-            const result = await Blog.findByIdAndDelete(id);
-            return result
-    },
+        const result = await Blog.findByIdAndDelete(id);
+        return result;
+    }
+
     async clearAllBlogs() {
         const result = await Blog.deleteMany({});
-        return result
-    },
-    _mapDbBlogToOutputModel(blog: BlobDBType): BlogType {
+        return result;
+    }
+
+    _mapDbBlogToOutputModel(blog: BlogDBType): BlogType {
         return {
             id: blog._id.toString(),
             createdAt: blog.createdAt,
@@ -82,4 +96,4 @@ export const blogRepository = {
             websiteUrl: blog.websiteUrl
         };
     }
-};
+}
