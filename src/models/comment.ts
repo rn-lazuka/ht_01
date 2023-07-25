@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import {CommentDBType} from '../types';
 
+
 export const commentSchema = new mongoose.Schema<CommentDBType>({
     content: String,
     createdAt: String,
@@ -8,7 +9,11 @@ export const commentSchema = new mongoose.Schema<CommentDBType>({
         userId: String,
         userLogin: String
     },
-    postId: String
+    postId: String,
+    likesInfo: {
+        likesCount: {type: Number, required: true},
+        dislikesCount: {type: Number, required: true}
+    }
 });
 
 commentSchema.virtual('id').get(function () {

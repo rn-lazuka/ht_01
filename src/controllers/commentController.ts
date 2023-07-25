@@ -1,12 +1,15 @@
 import {CommentService} from '../domain/commentsService';
 import {Request, Response} from 'express';
+import {LikeService} from '../domain/likeService';
+import {LikeStatus} from '../enums/Likes';
+import {CODE_RESPONSE} from '../enums';
 
 export class CommentController {
-    constructor(protected commentService: CommentService) {
+    constructor(protected commentService: CommentService, protected likeService: LikeService,) {
     }
 
     async getCommentById(req: Request, res: Response) {
-        const comment = await this.commentService.getCommentById(req.params.id);
+        const comment = await this.commentService.getCommentById(req.params.id, req.user?.id!);
         if (comment) {
             res.json(comment);
         } else {
@@ -15,7 +18,7 @@ export class CommentController {
     }
 
     async updateComment(req: Request, res: Response) {
-        const comment = await this.commentService.getCommentById(req.params.id);
+        const comment = await this.commentService.getCommentById(req.params.id, req.user?.id!);
         if (!comment) return res.sendStatus(404);
         if (req.user?.id !== comment?.commentatorInfo.userId) {
             return res.sendStatus(403);
@@ -24,8 +27,31 @@ export class CommentController {
         return isUpdatedComment ? res.sendStatus(204) : res.sendStatus(404);
     }
 
+    async updateCommentLikeInfo(req: Request, res: Response) {
+        const userId = req.user?.id!;
+        const comment = await this.commentService.getCommentById(req.params.commentId, userId);
+        if (!comment) return res.sendStatus(404);
+        const likeStatus = req.body.likeStatus;
+        const commentLikeInfo = await this.likeService.getCommentLikeInfo(userId, comment.id);
+        if (!commentLikeInfo) {
+            await this.likeService.addCommentLikeInfo({userId, commentId: comment.id, likeStatus});
+        }
+        if (commentLikeInfo && commentLikeInfo.likeStatus !== likeStatus) {
+            await this.likeService.updateCommentLikeInfo(userId, comment.id, likeStatus);
+        }
+        let likesInfo: { likesCount: number, dislikesCount: number } = {
+            likesCount: likeStatus === LikeStatus.LIKE && commentLikeInfo?.likeStatus !== likeStatus ? comment.likesInfo.likesCount + 1 : comment.likesInfo.likesCount,
+            dislikesCount: likeStatus === LikeStatus.DISLIKE && commentLikeInfo?.likeStatus !== likeStatus ? comment.likesInfo.dislikesCount + 1 : comment.likesInfo.dislikesCount,
+        };
+        if( commentLikeInfo?.likeStatus !== likeStatus) {
+            const isUpdatedComment = await this.commentService.updateCommentLikeInfo(req.params.id, likesInfo);
+            return isUpdatedComment ? res.sendStatus(204) : res.sendStatus(404);
+        }
+        return res.sendStatus(CODE_RESPONSE.INTERNAL_SERVER_ERROR_500)
+    }
+
     async deleteComment(req: Request, res: Response) {
-        const comment = await this.commentService.getCommentById(req.params.id);
+        const comment = await this.commentService.getCommentById(req.params.id, req.user?.id!);
         if (!comment) return res.sendStatus(404);
         if (req.user?.id !== comment?.commentatorInfo.userId) {
             return res.sendStatus(403);

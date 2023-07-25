@@ -54,8 +54,8 @@ export class JwtService {
             const jwtPayload = await this.checkIsTokenValid(refreshToken);
             if (!jwtPayload) return null;
             await this.deactivateRefreshToken(refreshToken);
-            const accessToken = this.createJWT(jwtPayload.userId!, '10s');
-            const newRefreshToken = this.createJWT(jwtPayload.userId, '20s', jwtPayload.deviceId);
+            const accessToken = this.createJWT(jwtPayload.userId!, '10m');
+            const newRefreshToken = this.createJWT(jwtPayload.userId, '1h', jwtPayload.deviceId);
             return {accessToken, refreshToken: newRefreshToken};
         } catch (error) {
             console.error(error);

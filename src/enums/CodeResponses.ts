@@ -1,4 +1,4 @@
-export enum CodeResponses {
+export enum CODE_RESPONSE {
     OK_200 = 200,
     CREATED_201 = 201,
     ACCEPTED_202 = 202,

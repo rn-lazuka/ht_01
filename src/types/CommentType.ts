@@ -1,8 +1,17 @@
 import {ObjectId} from 'mongodb';
+import {LikeStatus} from '../enums/Likes';
 
 export interface Commentator {
     userId: string;
     userLogin: string;
+}
+
+export class CommentLikesInfo {
+    constructor(
+        public likesCount = 0,
+        public dislikesCount = 0,
+        public myStatus: LikeStatus = LikeStatus.NONE) {
+    }
 }
 
 export interface CommentType {
@@ -11,6 +20,7 @@ export interface CommentType {
     createdAt: string;
     commentatorInfo: Commentator;
     postId?: string;
+    likesInfo: CommentLikesInfo;
 }
 
 // export interface CommentDBType extends Omit<CommentType,'id'> {
@@ -23,7 +33,11 @@ export class CommentDBType {
         public content: string,
         public commentatorInfo: Commentator,
         public createdAt: string,
-        public postId?: string,
+        public postId: string,
+        public likesInfo: {
+            likesCount: number,
+            dislikesCount: number
+        }
     ) {
     }
 }

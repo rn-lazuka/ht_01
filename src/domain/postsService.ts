@@ -1,4 +1,4 @@
-import {CommentDBType, PostDBType, PostType} from '../types';
+import {CommentDBType, CommentLikesInfo, PostDBType, PostType} from '../types';
 import {BlogRepository} from '../repositories/blogRepository';
 import {PostRepository} from '../repositories/postsRepository';
 import {ObjectId} from 'mongodb';
@@ -28,10 +28,10 @@ export class PostService {
         return await this.postRepository.createPost(newPost);
     }
 
-    async getCommentsByPostId(postId: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
+    async getCommentsByPostId(userId:string,postId: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const post = await this.postRepository.getPostById(postId);
         if (!post) return null;
-        return this.postRepository.getCommentsByPostId({postId, page, pageSize, sortBy, sortDirection});
+        return this.postRepository.getCommentsByPostId({userId, postId, page, pageSize, sortBy, sortDirection});
     }
 
     async createComment(props: CreateCommentProps) {
@@ -41,7 +41,10 @@ export class PostService {
             userId: props.userId,
             userLogin: props.userLogin
         };
-        const newComment = new CommentDBType(new ObjectId(), props.content, commentatorInfo, new Date().toISOString(), props.postId);
+        const newComment = new CommentDBType(new ObjectId(), props.content, commentatorInfo, new Date().toISOString(), props.postId, {
+            likesCount: 0,
+            dislikesCount: 0
+        });
         return await this.postRepository.addComment(newComment);
     }
 

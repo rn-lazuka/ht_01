@@ -25,8 +25,8 @@ export class AuthService {
     async loginUser(loginOrEmail: string, password: string) {
         const user = await this.userService.checkCredentials(loginOrEmail, password);
         if (user) {
-            const accessToken = this.jwtService.createJWT(user.id!, '10s');
-            const refreshToken = this.jwtService.createJWT(user.id!, '20s', uuid());
+            const accessToken = this.jwtService.createJWT(user.id!, '10m');
+            const refreshToken = this.jwtService.createJWT(user.id!, '1h', uuid());
             return {accessToken, refreshToken, userId:user.id!};
         }
         return null;

@@ -21,18 +21,22 @@ import {ApiRequestInfoRepository} from './repositories/apiRequestInfoRepository'
 import {ApiRequestInfoService} from './domain/apiRequestInfoService';
 import {EmailAdapter} from './adapters/emailAdapter';
 import {MailService} from './domain/mailService';
+import {LikesRepository} from './repositories/likesRepository';
+import {LikeService} from './domain/likeService';
 
 const emailAdapter = new EmailAdapter();
 
+export const likesRepository = new LikesRepository();
 export const userRepository = new UserRepository();
 export const blogRepository = new BlogRepository();
-export const postRepository = new PostRepository();
-export const commentRepository = new CommentRepository();
+export const commentRepository = new CommentRepository(likesRepository);
+export const postRepository = new PostRepository(commentRepository,likesRepository);
 export const deviceRepository = new DeviceRepository();
 export const authRepository = new AuthRepository();
 export const apiRequestInfoRepository = new ApiRequestInfoRepository();
 
 export const mailService = new MailService(emailAdapter);
+export const likeService = new LikeService(likesRepository);
 export const userService = new UserService(userRepository, mailService);
 export const blogService = new BlogService(blogRepository);
 const postService = new PostService(postRepository, blogRepository);
@@ -45,8 +49,8 @@ const authService = new AuthService(userService, jwtService, userRepository); //
 
 export const userController = new UserController(userService);
 export const blogController = new BlogController(blogService, postService);
-export const postController = new PostController(postService);
-export const commentController = new CommentController(commentService);
+export const postController = new PostController(postService, jwtService);
+export const commentController = new CommentController(commentService, likeService);
 export const deviceController = new DeviceController(deviceService,jwtService);
 export const authController = new AuthController(authService, jwtService, deviceService, userService);
 
