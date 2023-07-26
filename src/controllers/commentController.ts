@@ -3,9 +3,10 @@ import {Request, Response} from 'express';
 import {LikeService} from '../domain/likeService';
 import {LikeStatus} from '../enums/Likes';
 import {CODE_RESPONSE} from '../enums';
+import {JwtService} from '../domain/jwtService';
 
 export class CommentController {
-    constructor(protected commentService: CommentService, protected likeService: LikeService,) {
+    constructor(protected commentService: CommentService, protected likeService: LikeService, protected jwtService: JwtService,) {
     }
 
     async getCommentById(req: Request, res: Response) {

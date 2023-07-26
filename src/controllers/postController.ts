@@ -30,13 +30,8 @@ export class PostController {
         const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
         const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc';
-        const accessToken = req.cookies.accessToken;
-        const userId = await this.jwtService.getUserIdByToken(accessToken);
-        if(userId) {
-            const comments = await this.postService.getCommentsByPostId(userId,req.params.id, page, pageSize, sortBy, sortDirection);
+            const comments = await this.postService.getCommentsByPostId(req.user?.id,req.params.id, page, pageSize, sortBy, sortDirection);
             return comments ? res.status(CODE_RESPONSE.OK_200).json(comments) : res.sendStatus(CODE_RESPONSE.NOT_FOUND_404);
-        }
-        return res.sendStatus(CODE_RESPONSE.UNAUTHORIZED_401)
     }
 
     async createComment(req: Request, res: Response) {

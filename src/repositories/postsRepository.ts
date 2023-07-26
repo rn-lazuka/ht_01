@@ -1,12 +1,13 @@
-import {CommentDBType, CommentType, PostDBType, PostType} from '../types';
+import {CommentDBType, CommentLikesInfo, CommentType, PostDBType, PostType} from '../types';
 import {Post} from '../models/post';
 import {Comment} from '../models/comment';
 import {CommentRepository} from './commentsRepository';
 import {LikeStatus} from '../enums/Likes';
 import {LikesRepository} from './likesRepository';
+import {CommentLikeDBType} from '../types/likeType';
 
 export interface GetCommentProps {
-    userId: string;
+    userId?: string;
     postId: string;
     page?: number;
     pageSize?: number;
@@ -69,8 +70,11 @@ export class PostRepository {
 
 
         const commentsWithLikes = await Promise.all(comments.map(async (comment) => {
-            const likeInfo = await this.likesRepository.getCommentLikeInfo(comment._id.toString(), userId);
+            let likeInfo: CommentLikeDBType | null = null;
             let myStatus = LikeStatus.NONE;
+            if (userId) {
+                likeInfo = await this.likesRepository.getCommentLikeInfo(comment._id.toString(), userId);
+            }
             if (likeInfo) {
                 myStatus = likeInfo.likeStatus;
             }

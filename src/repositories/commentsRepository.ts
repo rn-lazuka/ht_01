@@ -14,9 +14,9 @@ export class CommentRepository {
             return null;
         }
         let myStatus = LikeStatus.NONE;
+
         if (userId) {
             const likeInfo = await this.likesRepository.getCommentLikeInfo(userId, commentId);
-
             if (likeInfo) {
                 myStatus = likeInfo.likeStatus;
             }

@@ -16,6 +16,7 @@ export class JwtService {
             const result = jwt.verify(token, JWT_SECRET) as JwtPayload;
             return result.userId;
         } catch (e) {
+            console.error(e);
             return null;
         }
     }
@@ -44,7 +45,6 @@ export class JwtService {
             if (!user || !isTokenActive) return null;
             return jwtPayload;
         } catch (e) {
-            console.log(e);
             return null;
         }
     }
@@ -54,8 +54,8 @@ export class JwtService {
             const jwtPayload = await this.checkIsTokenValid(refreshToken);
             if (!jwtPayload) return null;
             await this.deactivateRefreshToken(refreshToken);
-            const accessToken = this.createJWT(jwtPayload.userId!, '10m');
-            const newRefreshToken = this.createJWT(jwtPayload.userId, '1h', jwtPayload.deviceId);
+            const accessToken = this.createJWT(jwtPayload.userId!, '30m');
+            const newRefreshToken = this.createJWT(jwtPayload.userId, '24h', jwtPayload.deviceId);
             return {accessToken, refreshToken: newRefreshToken};
         } catch (error) {
             console.error(error);

@@ -50,7 +50,7 @@ const authService = new AuthService(userService, jwtService, userRepository); //
 export const userController = new UserController(userService);
 export const blogController = new BlogController(blogService, postService);
 export const postController = new PostController(postService, jwtService);
-export const commentController = new CommentController(commentService, likeService);
+export const commentController = new CommentController(commentService, likeService,jwtService);
 export const deviceController = new DeviceController(deviceService,jwtService);
 export const authController = new AuthController(authService, jwtService, deviceService, userService);
 

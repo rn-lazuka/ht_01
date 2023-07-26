@@ -28,7 +28,7 @@ export class PostService {
         return await this.postRepository.createPost(newPost);
     }
 
-    async getCommentsByPostId(userId:string,postId: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
+    async getCommentsByPostId(userId: string | undefined, postId: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const post = await this.postRepository.getPostById(postId);
         if (!post) return null;
         return this.postRepository.getCommentsByPostId({userId, postId, page, pageSize, sortBy, sortDirection});
