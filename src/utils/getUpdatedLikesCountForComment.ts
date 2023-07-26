@@ -12,7 +12,10 @@ export const getUpdatedLikesCountForComment = ({
                                                    likeStatus,
                                                    comment,
                                                    commentLikeInfo
-                                               }: getUpdatedLikesCountForComment):{ likesCount: number, dislikesCount: number } => {
+                                               }: getUpdatedLikesCountForComment): {
+    likesCount: number,
+    dislikesCount: number
+} => {
     if (likeStatus === LikeStatus.LIKE && commentLikeInfo && commentLikeInfo.likeStatus === LikeStatus.DISLIKE) {
         return {
             likesCount: comment.likesInfo.likesCount + 1,
@@ -37,5 +40,8 @@ export const getUpdatedLikesCountForComment = ({
             dislikesCount: comment.likesInfo.dislikesCount + 1
         };
     }
-    return comment.likesInfo.likesCount;
+    return {
+        likesCount: comment.likesInfo.likesCount,
+        dislikesCount: comment.likesInfo.dislikesCount
+    };
 };
