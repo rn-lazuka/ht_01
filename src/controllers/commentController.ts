@@ -4,6 +4,7 @@ import {LikeService} from '../domain/likeService';
 import {LikeStatus} from '../enums/Likes';
 import {CODE_RESPONSE} from '../enums';
 import {JwtService} from '../domain/jwtService';
+import {getUpdatedLikesCountForComment} from '../utils/getUpdatedLikesCountForComment';
 
 export class CommentController {
     constructor(protected commentService: CommentService, protected likeService: LikeService, protected jwtService: JwtService,) {
@@ -40,10 +41,8 @@ export class CommentController {
         if (commentLikeInfo && commentLikeInfo.likeStatus !== likeStatus) {
             await this.likeService.updateCommentLikeInfo(userId, comment.id, likeStatus);
         }
-        let likesInfo: { likesCount: number, dislikesCount: number } = {
-            likesCount: likeStatus === LikeStatus.LIKE && commentLikeInfo?.likeStatus !== likeStatus ? comment.likesInfo.likesCount + 1 : comment.likesInfo.likesCount,
-            dislikesCount: likeStatus === LikeStatus.DISLIKE && commentLikeInfo?.likeStatus !== likeStatus ? comment.likesInfo.dislikesCount + 1 : comment.likesInfo.dislikesCount,
-        };
+        let likesInfo = getUpdatedLikesCountForComment({commentLikeInfo, likeStatus, comment});
+
         if (commentLikeInfo?.likeStatus !== likeStatus) {
             const isUpdatedComment = await this.commentService.updateCommentLikeInfo(req.params.commentId, likesInfo);
             return isUpdatedComment ? res.sendStatus(CODE_RESPONSE.NO_CONTENT_204) : res.sendStatus(CODE_RESPONSE.NOT_FOUND_404);
