@@ -30,7 +30,7 @@ export class CommentController {
     async updateCommentLikeInfo(req: Request, res: Response) {
         const userId = req.user?.id!;
         const comment = await this.commentService.getCommentById(req.params.commentId, userId);
-        if (!comment) return res.sendStatus(404);
+        if (!comment) return res.sendStatus(CODE_RESPONSE.NOT_FOUND_404);
         const likeStatus = req.body.likeStatus;
         const commentLikeInfo = await this.likeService.getCommentLikeInfo(userId, comment.id);
         if (!commentLikeInfo) {
@@ -43,11 +43,14 @@ export class CommentController {
             likesCount: likeStatus === LikeStatus.LIKE && commentLikeInfo?.likeStatus !== likeStatus ? comment.likesInfo.likesCount + 1 : comment.likesInfo.likesCount,
             dislikesCount: likeStatus === LikeStatus.DISLIKE && commentLikeInfo?.likeStatus !== likeStatus ? comment.likesInfo.dislikesCount + 1 : comment.likesInfo.dislikesCount,
         };
-        if( commentLikeInfo?.likeStatus !== likeStatus) {
-            const isUpdatedComment = await this.commentService.updateCommentLikeInfo(req.params.id, likesInfo);
-            return isUpdatedComment ? res.sendStatus(204) : res.sendStatus(404);
+        if (commentLikeInfo?.likeStatus !== likeStatus) {
+            const isUpdatedComment = await this.commentService.updateCommentLikeInfo(req.params.commentId, likesInfo);
+            return isUpdatedComment ? res.sendStatus(CODE_RESPONSE.NO_CONTENT_204) : res.sendStatus(CODE_RESPONSE.NOT_FOUND_404);
         }
-        return res.sendStatus(CODE_RESPONSE.INTERNAL_SERVER_ERROR_500)
+        if (commentLikeInfo?.likeStatus === likeStatus) {
+            return res.sendStatus(CODE_RESPONSE.NO_CONTENT_204);
+        }
+        return res.sendStatus(CODE_RESPONSE.INTERNAL_SERVER_ERROR_500);
     }
 
     async deleteComment(req: Request, res: Response) {
