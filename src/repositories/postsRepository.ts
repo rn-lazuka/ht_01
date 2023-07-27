@@ -73,7 +73,7 @@ export class PostRepository {
             let likeInfo: CommentLikeDBType | null = null;
             let myStatus = LikeStatus.NONE;
             if (userId) {
-                likeInfo = await this.likesRepository.getCommentLikeInfo(comment._id.toString(), userId);
+                likeInfo = await this.likesRepository.getCommentLikeInfo(userId,comment._id.toString());
             }
             if (likeInfo) {
                 myStatus = likeInfo.likeStatus;
