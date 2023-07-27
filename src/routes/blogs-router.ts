@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {inputValidationMiddleware} from '../utils/validateErrors';
+import {inputValidationMiddleware} from '../utils';
 import {blogPostValidations, blogValidations, updateBlogsValidations} from '../validators/blogs';
 import {checkAuth} from '../utils';
 import {blogController} from '../compositionRoot';

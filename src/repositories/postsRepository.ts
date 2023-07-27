@@ -23,7 +23,7 @@ export class PostRepository {
 
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const postQuery = Post.find();
-        const totalCount = await postQuery.countDocuments();
+        const totalCount = await Post.countDocuments();
         const pagesCount = Math.ceil(totalCount / pageSize);
         const posts = await postQuery
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
@@ -60,7 +60,7 @@ export class PostRepository {
                                   pageSize = 10
                               }: GetCommentProps) {
         const commentQuery = Comment.find({postId});
-        const totalCount = await commentQuery.countDocuments();
+        const totalCount = await Comment.countDocuments({postId});
         const pagesCount = Math.ceil(totalCount / pageSize);
         const comments = await commentQuery
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})

@@ -1,19 +1,16 @@
 import {BlogDBType, BlogType} from '../types';
 import {Blog} from '../models/blog';
 import {Post} from '../models/post';
+import {User} from '../models/user';
 
 export class BlogRepository {
     async getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {
-        const blogQuery = Blog.find();
         const filter: any = {};
         if (searchNameTerm) {
             filter.name = {$regex: searchNameTerm, $options: 'i'}; // Case-insensitive search
         }
-        if (Object.keys(filter).length > 0) {
-            blogQuery.where(filter);
-        }
-
-        const totalCount = await blogQuery.countDocuments();
+        const blogQuery = Blog.find(filter);
+        const totalCount = await Blog.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize);
 
         const blogs = await blogQuery
@@ -38,8 +35,7 @@ export class BlogRepository {
 
     async getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
         const postQuery = Post.find({blogId: id});
-
-        const totalCount = await postQuery.countDocuments();
+        const totalCount = await Post.countDocuments({blogId: id});
         const pagesCount = Math.ceil(totalCount / pageSize);
 
         const posts = await postQuery

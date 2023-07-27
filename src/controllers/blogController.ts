@@ -13,6 +13,7 @@ export class BlogController {
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
         const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc';
         const blogs = await this.blogService.getBlogs(page, pageSize, searchNameTerm, sortBy, sortDirection);
+
         res.json(blogs);
     }
 
