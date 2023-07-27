@@ -16,28 +16,28 @@ export const getUpdatedLikesCountForComment = ({
     likesCount: number,
     dislikesCount: number
 } => {
-    if (likeStatus === LikeStatus.LIKE && commentLikeInfo && commentLikeInfo.likeStatus === LikeStatus.DISLIKE) {
+    if (likeStatus === LikeStatus.LIKE && commentLikeInfo) {
         return {
-            likesCount: comment.likesInfo.likesCount + 1,
-            dislikesCount: comment.likesInfo.dislikesCount - 1
+            likesCount: commentLikeInfo.likeStatus !== LikeStatus.LIKE ? comment.likesInfo.likesCount + 1 : comment.likesInfo.likesCount,
+            dislikesCount: commentLikeInfo.likeStatus === LikeStatus.DISLIKE ? comment.likesInfo.dislikesCount - 1 : comment.likesInfo.dislikesCount
         };
     }
-    if (likeStatus === LikeStatus.LIKE && commentLikeInfo && commentLikeInfo.likeStatus !== LikeStatus.DISLIKE) {
+    if (likeStatus === LikeStatus.DISLIKE && commentLikeInfo) {
         return {
-            likesCount: comment.likesInfo.likesCount + 1,
-            dislikesCount: comment.likesInfo.dislikesCount
+            likesCount: commentLikeInfo.likeStatus === LikeStatus.LIKE ? comment.likesInfo.likesCount - 1 : comment.likesInfo.likesCount,
+            dislikesCount: commentLikeInfo.likeStatus === LikeStatus.DISLIKE ? comment.likesInfo.dislikesCount : comment.likesInfo.dislikesCount + 1
         };
     }
-    if (likeStatus === LikeStatus.DISLIKE && commentLikeInfo && commentLikeInfo.likeStatus === LikeStatus.LIKE) {
+    if (likeStatus === LikeStatus.NONE && commentLikeInfo) {
         return {
-            likesCount: comment.likesInfo.likesCount - 1,
-            dislikesCount: comment.likesInfo.dislikesCount + 1
+            likesCount: commentLikeInfo.likeStatus === LikeStatus.LIKE ? comment.likesInfo.likesCount - 1 : comment.likesInfo.likesCount,
+            dislikesCount: commentLikeInfo.likeStatus === LikeStatus.DISLIKE ? comment.likesInfo.dislikesCount - 1 : comment.likesInfo.dislikesCount
         };
     }
-    if (likeStatus === LikeStatus.DISLIKE && commentLikeInfo && commentLikeInfo.likeStatus !== LikeStatus.LIKE) {
+    if (!commentLikeInfo) {
         return {
-            likesCount: comment.likesInfo.likesCount,
-            dislikesCount: comment.likesInfo.dislikesCount + 1
+            likesCount: likeStatus === LikeStatus.LIKE ? comment.likesInfo.likesCount + 1 : comment.likesInfo.likesCount,
+            dislikesCount: likeStatus === LikeStatus.DISLIKE ? comment.likesInfo.dislikesCount + 1 : comment.likesInfo.dislikesCount
         };
     }
     return {
