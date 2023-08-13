@@ -2,9 +2,15 @@ import {UserRepository} from '../repositories/userRepository';
 import {UserService} from './userService';
 import {JwtService} from './jwtService';
 import {v4 as uuid} from 'uuid';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class AuthService {
-    constructor(protected userService: UserService, protected jwtService: JwtService, protected userRepository: UserRepository) {
+    constructor(
+       @inject(UserService) protected userService: UserService,
+       @inject(JwtService) protected jwtService: JwtService,
+       @inject(UserRepository) protected userRepository: UserRepository
+    ) {
     }
     async confirmEmail(code: string) {
         const user = await this.userService.findUserByConfirmationCode(code);

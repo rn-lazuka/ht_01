@@ -1,5 +1,8 @@
 import {body} from 'express-validator';
-import {userService} from '../compositionRoot';
+import {container} from '../compositionRoot';
+import {UserService} from '../domain/userService';
+
+const userService = container.resolve(UserService);
 
 export const authValidations = [
     body('loginOrEmail').isString().trim().notEmpty(),

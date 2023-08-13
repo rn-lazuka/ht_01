@@ -1,24 +1,8 @@
 import {Router} from 'express';
-import {
-    apiRequestInfoRepository,
-    blogRepository,
-    commentRepository,
-    deviceRepository,
-    postRepository,
-    userRepository
-} from '../compositionRoot';
-import {clearVideosDB} from './video-router';
-
+import {container} from '../compositionRoot';
+import {TestingController} from '../controllers/testingController';
 
 export const testRouter = Router();
+const testingController = container.resolve(TestingController);
 
-testRouter.delete('/', (req, res) => {
-    clearVideosDB();
-    blogRepository.clearAllBlogs();
-    postRepository.clearAllPosts();
-    userRepository.clearAllUsers();
-    commentRepository.clearAllComments();
-    deviceRepository.clearAllDevices();
-    apiRequestInfoRepository.clearRequestsInfo();
-    res.sendStatus(204);
-});
+testRouter.delete('/',  testingController.deleteAllData.bind(testingController));

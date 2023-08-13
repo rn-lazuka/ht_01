@@ -23,34 +23,40 @@ import {EmailAdapter} from './adapters/emailAdapter';
 import {MailService} from './domain/mailService';
 import {LikesRepository} from './repositories/likesRepository';
 import {LikeService} from './domain/likeService';
+import {Container} from 'inversify';
 
-const emailAdapter = new EmailAdapter();
+export const container = new Container()
 
-export const likesRepository = new LikesRepository();
-export const userRepository = new UserRepository();
-export const blogRepository = new BlogRepository();
-export const commentRepository = new CommentRepository(likesRepository);
-export const postRepository = new PostRepository(commentRepository,likesRepository);
-export const deviceRepository = new DeviceRepository();
-export const authRepository = new AuthRepository();
-export const apiRequestInfoRepository = new ApiRequestInfoRepository();
+container.bind(EmailAdapter).to(EmailAdapter)
 
-export const mailService = new MailService(emailAdapter);
-export const likeService = new LikeService(likesRepository);
-export const userService = new UserService(userRepository, mailService);
-export const blogService = new BlogService(blogRepository);
-const postService = new PostService(postRepository, blogRepository);
-const commentService = new CommentService(commentRepository);
-export const jwtService = new JwtService(authRepository, userRepository);
-const deviceService = new DeviceService(deviceRepository,jwtService);
-export const apiRequestInfoService = new ApiRequestInfoService(apiRequestInfoRepository);
-const authService = new AuthService(userService, jwtService, userRepository); //TODO нормально ли использовать сервисы в других сервисах
+container.bind(LikesRepository).to(LikesRepository)
+container.bind(ApiRequestInfoRepository).to(ApiRequestInfoRepository)
 
+container.bind(ApiRequestInfoService).to(ApiRequestInfoService)
+container.bind(JwtService).to(JwtService)
+container.bind(LikeService).to(LikeService)
+container.bind(MailService).to(MailService)
 
-export const userController = new UserController(userService);
-export const blogController = new BlogController(blogService, postService);
-export const postController = new PostController(postService, jwtService);
-export const commentController = new CommentController(commentService, likeService,jwtService);
-export const deviceController = new DeviceController(deviceService,jwtService);
-export const authController = new AuthController(authService, jwtService, deviceService, userService);
+container.bind(UserController).to(UserController)
+container.bind(UserService).to(UserService)
+container.bind(UserRepository).to(UserRepository)
 
+container.bind(BlogController).to(BlogController)
+container.bind(BlogService).to(BlogService)
+container.bind(BlogRepository).to(BlogRepository)
+
+container.bind(PostController).to(PostController)
+container.bind(PostService).to(PostService)
+container.bind(PostRepository).to(PostRepository)
+
+container.bind(CommentController).to(CommentController)
+container.bind(CommentService).to(CommentService)
+container.bind(CommentRepository).to(CommentRepository)
+
+container.bind(DeviceController).to(DeviceController)
+container.bind(DeviceService).to(DeviceService)
+container.bind(DeviceRepository).to(DeviceRepository)
+
+container.bind(AuthController).to(AuthController)
+container.bind(AuthService).to(AuthService)
+container.bind(AuthRepository).to(AuthRepository)

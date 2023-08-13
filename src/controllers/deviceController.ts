@@ -1,9 +1,14 @@
 import {DeviceService} from '../domain/deviceService';
 import {Request, Response} from 'express';
 import {JwtService} from '../domain/jwtService';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class DeviceController {
-    constructor(protected deviceService: DeviceService, protected jwtService: JwtService) {
+    constructor(
+        @inject(DeviceService) protected deviceService: DeviceService,
+        @inject(JwtService) protected jwtService: JwtService
+    ) {
     }
 
     async getAllDevicesByUserId(req: Request, res: Response) {

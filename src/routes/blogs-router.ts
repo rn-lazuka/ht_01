@@ -1,10 +1,11 @@
 import {Router} from 'express';
-import {inputValidationMiddleware} from '../utils';
+import {checkAuth, inputValidationMiddleware} from '../utils';
 import {blogPostValidations, blogValidations, updateBlogsValidations} from '../validators/blogs';
-import {checkAuth} from '../utils';
-import {blogController} from '../compositionRoot';
+import {container} from '../compositionRoot';
+import {BlogController} from '../controllers/blogController';
 
 export const blogRouter = Router();
+const blogController = container.resolve(BlogController);
 
 blogRouter.get('/', blogController.getBlogs.bind(blogController));
 blogRouter.get('/:id/posts', blogController.getAllPostsForBlog.bind(blogController));

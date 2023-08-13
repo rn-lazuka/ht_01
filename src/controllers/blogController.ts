@@ -1,9 +1,14 @@
 import {BlogService} from '../domain/blogService';
 import {Request, Response} from 'express';
 import {PostService} from '../domain/postsService';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class BlogController {
-    constructor(protected blogService: BlogService, protected postService: PostService) {
+    constructor(
+        @inject(BlogService) protected blogService: BlogService,
+        @inject(PostService) protected postService: PostService
+    ) {
     }
 
     async getBlogs(req: Request, res: Response) {

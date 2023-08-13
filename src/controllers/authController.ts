@@ -3,13 +3,15 @@ import {JwtService} from '../domain/jwtService';
 import {Request, Response} from 'express';
 import {DeviceService} from '../domain/deviceService';
 import {UserService} from '../domain/userService';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class AuthController {
     constructor(
-        protected authService: AuthService,
-        protected jwtService: JwtService,
-        protected deviceService: DeviceService,
-        protected userService: UserService
+        @inject(AuthService) protected authService: AuthService,
+        @inject(JwtService) protected jwtService: JwtService,
+        @inject(DeviceService) protected deviceService: DeviceService,
+        @inject(UserService) protected userService: UserService
     ) {
     }
 

@@ -2,10 +2,12 @@ import {CommentDBType, CommentType} from '../types';
 import {Comment} from '../models/comment';
 import {LikesRepository} from './likesRepository';
 import {LikeStatus} from '../enums/Likes';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class CommentRepository {
     constructor(
-        protected likesRepository: LikesRepository) {
+        @inject(LikesRepository) protected likesRepository: LikesRepository) {
     }
 
     async getCommentById(commentId: string, userId?: string) {

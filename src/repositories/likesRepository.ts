@@ -1,5 +1,3 @@
-import {CommentDBType, CommentType} from '../types';
-import {Comment} from '../models/comment';
 import {CommentLike} from '../models/likes';
 import {CommentLikeDBType} from '../types/likeType';
 import {LikeStatus} from '../enums/Likes';

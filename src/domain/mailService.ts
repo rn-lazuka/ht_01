@@ -1,8 +1,10 @@
 import {UserEntity} from '../types';
 import {EmailAdapter} from '../adapters/emailAdapter';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class MailService {
-    constructor(protected emailAdapter: EmailAdapter) {
+    constructor( @inject(EmailAdapter) protected emailAdapter: EmailAdapter) {
     }
 
     async sendEmailConfirmationCode(user: UserEntity) {

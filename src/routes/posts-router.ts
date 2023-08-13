@@ -1,12 +1,14 @@
 import {Router} from 'express';
-import {inputValidationMiddleware} from '../utils/validateErrors';
+import {checkAuth, inputValidationMiddleware} from '../utils';
 import {postsValidations, updatePostsValidations} from '../validators/posts';
 import {commentsValidations} from '../validators/comments';
-import {checkAuth} from '../utils';
 import {authMiddleware, validateAccessTokenGetRequests} from '../middlewares/authMiddleware';
-import {postController} from '../compositionRoot';
+import {container} from '../compositionRoot';
+import {PostController} from '../controllers/postController';
 
 export const postsRouter = Router();
+const postController = container.resolve(PostController);
+
 
 postsRouter.get('/', postController.getPosts.bind(postController));
 postsRouter.get('/:id', postController.getPostById.bind(postController));

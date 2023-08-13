@@ -1,11 +1,11 @@
-import {CommentRepository} from '../repositories/commentsRepository';
-import {CommentType} from '../types';
 import {LikesRepository} from '../repositories/likesRepository';
 import {LikeStatus} from '../enums/Likes';
 import {CommentLikeDBType} from '../types/likeType';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class LikeService {
-    constructor(protected likeRepository: LikesRepository) {
+    constructor(@inject(LikesRepository) protected likeRepository: LikesRepository) {
     }
 
     getCommentLikeInfo(userId: string, commentId: string) {

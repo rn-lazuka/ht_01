@@ -1,8 +1,11 @@
 import {NextFunction, Request, Response} from 'express';
-import {ObjectId} from 'mongodb';
-import {jwtService, userService} from '../compositionRoot';
+import {container} from '../compositionRoot';
+import {JwtService} from '../domain/jwtService';
+import {UserService} from '../domain/userService';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    const jwtService = container.resolve(JwtService)
+    const userService = container.resolve(UserService)
     if (!req.headers.authorization) {
         return res.sendStatus(401);
     }
@@ -16,6 +19,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 };
 
 export const validateAccessTokenGetRequests = async (req: Request, res: Response, next: NextFunction) => {
+    const jwtService = container.resolve(JwtService)
+    const userService = container.resolve(UserService)
     if (!req.headers.authorization) {
         return next();
     }

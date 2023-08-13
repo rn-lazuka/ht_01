@@ -1,9 +1,11 @@
 import {BlogDBType, BlogType} from '../types';
 import {BlogRepository} from '../repositories/blogRepository';
 import {ObjectId} from 'mongodb';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class BlogService {
-    constructor(protected blogRepository: BlogRepository) {
+    constructor(@inject(BlogRepository) protected blogRepository: BlogRepository) {
     }
 
     getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {

@@ -1,8 +1,10 @@
 import {UserService} from '../domain/userService';
 import {Request, Response} from 'express';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class UserController {
-    constructor(protected userService: UserService) {
+    constructor(@inject(UserService) protected userService: UserService) {
     }
 
     async getUsers(req: Request, res: Response) {

@@ -1,9 +1,11 @@
 import {NextFunction, Request, Response} from 'express';
-import { apiRequestInfoService } from '../compositionRoot';
 import {ApiRequestInfo} from '../types';
+import {container} from '../compositionRoot';
+import {ApiRequestInfoService} from '../domain/apiRequestInfoService';
 
 export const apiRequestsRateMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const ip = req.socket.remoteAddress;
+    const apiRequestInfoService = container.resolve(ApiRequestInfoService);
     if (ip) {
         const requestInfoFilter: ApiRequestInfo = {
             IP: ip,

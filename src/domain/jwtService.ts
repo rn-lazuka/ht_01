@@ -2,9 +2,14 @@ import jwt, {JwtPayload} from 'jsonwebtoken';
 import {JWT_SECRET} from '../settings';
 import {AuthRepository} from '../repositories/authRepository';
 import {UserRepository} from '../repositories/userRepository';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class JwtService {
-    constructor(protected authRepository: AuthRepository, protected userRepository: UserRepository) {
+    constructor(
+        @inject(AuthRepository) protected authRepository: AuthRepository,
+        @inject(UserRepository) protected userRepository: UserRepository
+    ) {
     }
 
     createJWT(userId: string, expirationTime: string, deviceId?: string) {

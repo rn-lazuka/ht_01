@@ -1,7 +1,5 @@
 import {EmailConfirmation, Pagination, RecoveryData, Sorting, UserDBType, UserEntity} from '../types';
 import {User} from '../models/user';
-import {v4 as uuid} from 'uuid';
-import {th} from 'date-fns/locale';
 
 export interface UserSearchTerm {
     searchLoginTerm: string | null;

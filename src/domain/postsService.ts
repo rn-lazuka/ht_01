@@ -2,6 +2,7 @@ import {CommentDBType, CommentLikesInfo, PostDBType, PostType} from '../types';
 import {BlogRepository} from '../repositories/blogRepository';
 import {PostRepository} from '../repositories/postsRepository';
 import {ObjectId} from 'mongodb';
+import {inject, injectable} from 'inversify';
 
 export interface CreateCommentProps {
     postId: string;
@@ -10,8 +11,11 @@ export interface CreateCommentProps {
     userLogin: string;
 }
 
+@injectable()
 export class PostService {
-    constructor(protected postRepository: PostRepository, protected blogRepository: BlogRepository) {
+    constructor(
+        @inject(PostRepository) protected postRepository: PostRepository,
+        @inject(BlogRepository) protected blogRepository: BlogRepository) {
     }
 
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {

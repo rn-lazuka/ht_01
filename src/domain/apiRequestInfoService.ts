@@ -1,8 +1,10 @@
 import {ApiRequestInfo, ApiRequestInfoDBType} from '../types';
 import {ApiRequestInfoRepository} from '../repositories/apiRequestInfoRepository';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class ApiRequestInfoService {
-    constructor(protected apiRequestInfoRepository: ApiRequestInfoRepository) {
+    constructor(@inject(ApiRequestInfoRepository) protected apiRequestInfoRepository: ApiRequestInfoRepository) {
     }
 
     async saveRequestInfo(requestInfo: ApiRequestInfoDBType) {

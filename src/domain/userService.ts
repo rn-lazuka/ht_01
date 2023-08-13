@@ -5,9 +5,14 @@ import {v4 as uuid} from 'uuid';
 import {add} from 'date-fns';
 import {MailService} from './mailService';
 import {ObjectId} from 'mongodb';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class UserService {
-    constructor(protected userRepository: UserRepository, protected mailService: MailService) {
+    constructor(
+        @inject(UserRepository) protected userRepository: UserRepository,
+        @inject(MailService) protected mailService: MailService
+    ) {
     }
 
     getUsers(pagination: Pagination, searchTerm: UserSearchTerm, sorting: Sorting) {
@@ -127,11 +132,13 @@ export class UserService {
         }
         return null;
     }
+
     async findUserByLoginOrEmail(loginOrEmail: string) {
-        return await this.userRepository.findUserByLoginOrEmail(loginOrEmail)
+        return await this.userRepository.findUserByLoginOrEmail(loginOrEmail);
     }
+
     async findUserByPasswordRecoveryCode(code: string) {
-        return await this.userRepository.findUserByPasswordRecoveryCode(code)
+        return await this.userRepository.findUserByPasswordRecoveryCode(code);
     }
 
     deleteUser(id: string) {

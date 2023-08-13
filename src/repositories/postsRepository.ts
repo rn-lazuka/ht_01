@@ -5,6 +5,7 @@ import {CommentRepository} from './commentsRepository';
 import {LikeStatus} from '../enums/Likes';
 import {LikesRepository} from './likesRepository';
 import {CommentLikeDBType} from '../types/likeType';
+import {inject, injectable} from 'inversify';
 
 export interface GetCommentProps {
     userId?: string;
@@ -15,10 +16,11 @@ export interface GetCommentProps {
     sortDirection?: 'asc' | 'desc';
 }
 
+@injectable()
 export class PostRepository {
     constructor(
-        protected commentRepository: CommentRepository,
-        protected likesRepository: LikesRepository) {
+        @inject(CommentRepository) protected commentRepository: CommentRepository,
+        @inject(LikesRepository) protected likesRepository: LikesRepository) {
     }
 
     async getPosts(page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {

@@ -1,13 +1,18 @@
 import {CommentService} from '../domain/commentsService';
 import {Request, Response} from 'express';
 import {LikeService} from '../domain/likeService';
-import {LikeStatus} from '../enums/Likes';
 import {CODE_RESPONSE} from '../enums';
 import {JwtService} from '../domain/jwtService';
-import {getUpdatedLikesCountForComment} from '../utils/getUpdatedLikesCountForComment';
+import {getUpdatedLikesCountForComment} from '../utils';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class CommentController {
-    constructor(protected commentService: CommentService, protected likeService: LikeService, protected jwtService: JwtService,) {
+    constructor(
+        @inject(CommentService) protected commentService: CommentService,
+        @inject(LikeService) protected likeService: LikeService,
+        @inject(JwtService) protected jwtService: JwtService,
+    ) {
     }
 
     async getCommentById(req: Request, res: Response) {

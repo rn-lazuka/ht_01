@@ -1,10 +1,12 @@
 import {Router} from 'express';
-import {inputValidationMiddleware} from '../utils/validateErrors';
+import {checkAuth, inputValidationMiddleware} from '../utils';
 import {userValidations} from '../validators/users';
-import {checkAuth} from '../utils';
-import {userController} from '../compositionRoot';
+import {container} from '../compositionRoot';
+import {UserController} from '../controllers/userController';
 
 export const userRouter = Router();
+const userController = container.resolve(UserController);
+
 
 userRouter.get('/', checkAuth, inputValidationMiddleware, userController.getUsers.bind(userController));
 userRouter.post('/', checkAuth, userValidations, inputValidationMiddleware, userController.createUserByAdmin.bind(userController));

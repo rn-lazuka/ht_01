@@ -7,13 +7,15 @@ import {
     registrationValidations,
     resendingEmailValidations
 } from '../validators/auth';
-import {inputValidationMiddleware} from '../utils/validateErrors';
+import {inputValidationMiddleware} from '../utils';
 import {authMiddleware} from '../middlewares/authMiddleware';
 import {apiRequestsInfoMiddleware} from '../middlewares/apiRequestsInfoMiddleware';
 import {apiRequestsRateMiddleware} from '../middlewares/apiRequestsRateMiddleware';
-import {authController} from '../compositionRoot';
+import {container} from '../compositionRoot';
+import {AuthController} from '../controllers/authController';
 
 export const authRouter = Router();
+const authController = container.resolve(AuthController);
 
 authRouter.post('/login', apiRequestsInfoMiddleware, apiRequestsRateMiddleware, authValidations, inputValidationMiddleware, authController.loginUser.bind(authController));
 authRouter.post('/logout', authController.deactivateRefreshToken.bind(authController));

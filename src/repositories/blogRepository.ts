@@ -1,7 +1,6 @@
 import {BlogDBType, BlogType} from '../types';
 import {Blog} from '../models/blog';
 import {Post} from '../models/post';
-import {User} from '../models/user';
 
 export class BlogRepository {
     async getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {

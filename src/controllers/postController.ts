@@ -2,9 +2,14 @@ import {PostService} from '../domain/postsService';
 import {Request, Response} from 'express';
 import {JwtService} from '../domain/jwtService';
 import {CODE_RESPONSE} from '../enums';
+import {inject, injectable} from 'inversify';
 
+@injectable()
 export class PostController {
-    constructor(protected postService: PostService, protected jwtService: JwtService) {
+    constructor(
+        @inject(PostService) protected postService: PostService,
+        @inject(JwtService) protected jwtService: JwtService
+    ) {
     }
 
     async getPosts(req: Request, res: Response) {
@@ -30,8 +35,8 @@ export class PostController {
         const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
         const sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc';
-            const comments = await this.postService.getCommentsByPostId(req.user?.id,req.params.id, page, pageSize, sortBy, sortDirection);
-            return comments ? res.status(CODE_RESPONSE.OK_200).json(comments) : res.sendStatus(CODE_RESPONSE.NOT_FOUND_404);
+        const comments = await this.postService.getCommentsByPostId(req.user?.id, req.params.id, page, pageSize, sortBy, sortDirection);
+        return comments ? res.status(CODE_RESPONSE.OK_200).json(comments) : res.sendStatus(CODE_RESPONSE.NOT_FOUND_404);
     }
 
     async createComment(req: Request, res: Response) {

@@ -3,10 +3,16 @@ import {JwtService} from './jwtService';
 import {DeviceDBType} from '../types';
 import {JwtPayload} from 'jsonwebtoken';
 import {ObjectId} from 'mongodb';
+import {inject, injectable} from 'inversify';
 
-export class DeviceService  {
-    constructor(protected deviceRepository: DeviceRepository, protected jwtService: JwtService) {
+@injectable()
+export class DeviceService {
+    constructor(
+        @inject(DeviceRepository) protected deviceRepository: DeviceRepository,
+        @inject(JwtService) protected jwtService: JwtService
+    ) {
     }
+
     async addDevice(ip: string, title: string, userId: string, refreshToken: string) {
         const tokenPayload = await this.jwtService.getTokenPayload(refreshToken);
         if (tokenPayload) {
@@ -15,18 +21,23 @@ export class DeviceService  {
         }
         return null;
     }
+
     async updateDeviceInfo(tokenPayload: JwtPayload) {
         return await this.deviceRepository.updateDeviceInfo(tokenPayload);
     }
+
     async getDeviceById(deviceId: string) {
         return await this.deviceRepository.getDeviceById(deviceId);
     }
+
     async getAllDevicesByUserId(id: string) {
         return await this.deviceRepository.getAllDevicesByUserId(id);
     }
+
     async deleteAllOtherDevices(userId: string, deviceId: string) {
         return await this.deviceRepository.deleteAllOtherDevices(userId, deviceId);
     }
+
     async deleteDeviceById(userId: string, deviceId: string) {
         return await this.deviceRepository.deleteDeviceById(userId, deviceId);
     }
