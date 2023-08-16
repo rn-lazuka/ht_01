@@ -1,6 +1,8 @@
 import {RefreshToken} from '../models/refreshToken';
 import {RefreshTokenType} from '../types';
+import {injectable} from 'inversify';
 
+@injectable()
 export class AuthRepository {
     async deactivateRefreshToken(refreshObject: RefreshTokenType) {
         let newToken = new RefreshToken(refreshObject);

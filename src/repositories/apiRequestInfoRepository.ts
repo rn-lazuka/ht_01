@@ -1,6 +1,8 @@
 import {ApiRequestInfo} from '../types';
 import {ApiRequest} from '../models/apiRequests';
+import {injectable} from 'inversify';
 
+@injectable()
 export class ApiRequestInfoRepository {
     async saveRequestInfo(apiRequest: ApiRequestInfo) {
         let newRequest = new ApiRequest(apiRequest);

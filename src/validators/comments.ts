@@ -5,7 +5,7 @@ export const commentsValidations = [
     body('content').isString().withMessage('Name must be a string').trim().notEmpty().isLength({max: 300, min: 20}).withMessage('Min 20 max 300 characters'),
 ];
 
-export const commentLikeInfoValidations = [
+export const likeInfoValidations = [
     body('likeStatus')
         .isString().withMessage('Name must be a string')
         .trim()

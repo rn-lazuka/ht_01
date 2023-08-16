@@ -1,4 +1,5 @@
 import {ObjectId} from 'mongodb';
+import {ExtendedLikesInfo} from './likeType';
 
 export interface PostType {
     id: string;
@@ -8,6 +9,7 @@ export interface PostType {
     blogId: string;
     blogName: string;
     createdAt: string;
+    extendedLikesInfo: ExtendedLikesInfo;
 }
 
 // export interface PostDBType extends Omit<PostType,'id'> {
@@ -22,6 +24,8 @@ export class PostDBType {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public createdAt: string) {
+        public createdAt: string = new Date().toISOString(),
+        public extendedLikesInfo = new ExtendedLikesInfo()
+    ) {
     }
 }

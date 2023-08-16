@@ -1,7 +1,9 @@
 import {DeviceType, DeviceDBType} from '../types';
 import {JwtPayload} from 'jsonwebtoken';
 import {Device} from '../models/device';
+import {injectable} from 'inversify';
 
+@injectable()
 export class DeviceRepository {
     async addDevice(deviceInfo: DeviceDBType) {
         let newDevice = new Device(deviceInfo);

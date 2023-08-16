@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import {PostDBType} from '../types';
+import {ExtendedLikesInfo, NewLike} from '../types/likeType';
+import {LikeStatus} from '../enums/Likes';
 
 export const postSchema = new mongoose.Schema<PostDBType>({
     title: String,
@@ -8,6 +10,10 @@ export const postSchema = new mongoose.Schema<PostDBType>({
     blogId: String,
     blogName: String,
     createdAt: String,
+    extendedLikesInfo: {
+        likesCount: Number,
+        dislikesCount: Number,
+    },
 });
 
 postSchema.virtual('id').get(function () {

@@ -1,6 +1,6 @@
 import {LikesRepository} from '../repositories/likesRepository';
 import {LikeStatus} from '../enums/Likes';
-import {CommentLikeDBType} from '../types/likeType';
+import {CommentLikeDBType, PostLikeDBType} from '../types/likeType';
 import {inject, injectable} from 'inversify';
 
 @injectable()
@@ -19,4 +19,13 @@ export class LikeService {
         return this.likeRepository.updateCommentLikeInfo(userId, commentId, likeStatus);
     }
 
+    getPostLikeInfo(userId: string, postId: string) {
+        return this.likeRepository.getPostLikeInfo(userId, postId);
+    }
+    addPostLikeInfo(likeInfo:PostLikeDBType) {
+        return this.likeRepository.addPostLikeInfo(likeInfo);
+    }
+    updatePostLikeInfo(userId: string, postId: string, likeStatus: LikeStatus, addedAt: string, login: string) {
+        return this.likeRepository.updatePostLikeInfo(userId, postId, likeStatus, addedAt, login);
+    }
 }

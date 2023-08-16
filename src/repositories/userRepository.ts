@@ -1,5 +1,6 @@
 import {EmailConfirmation, Pagination, RecoveryData, Sorting, UserDBType, UserEntity} from '../types';
 import {User} from '../models/user';
+import {injectable} from 'inversify';
 
 export interface UserSearchTerm {
     searchLoginTerm: string | null;
@@ -14,6 +15,7 @@ export interface PassDataForUpdate {
     }
 }
 
+@injectable()
 export class UserRepository {
     async getUsers(pagination: Pagination, sorting: Sorting, searchTerm: UserSearchTerm): Promise<{
         pagesCount: number;

@@ -1,7 +1,9 @@
 import {BlogDBType, BlogType} from '../types';
 import {Blog} from '../models/blog';
 import {Post} from '../models/post';
+import {injectable} from 'inversify';
 
+@injectable()
 export class BlogRepository {
     async getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {
         const filter: any = {};
