@@ -31,7 +31,7 @@ export class BlogController {
         const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 10;
         const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt';
         const sortDirection = req.query.sortDirection ? req.query.sortDirection.toString() as 'asc' | 'desc' : 'desc';
-        const posts = await this.blogService.getAllPostsForBlog(req.params.id, page, pageSize, sortBy, sortDirection);
+        const posts = await this.blogService.getAllPostsForBlog(req.params.id, page, pageSize, sortBy, sortDirection, req.user?.id);
         return res.json(posts);
     }
 

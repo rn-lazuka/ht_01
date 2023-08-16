@@ -34,7 +34,7 @@ export class PostRepository {
             .lean();
 
 
-        const postWithLikes = await Promise.all(posts.map(async (post) => {
+        const postsWithLikes = await Promise.all(posts.map(async (post) => {
             let likeInfo: PostLikeDBType | null = null;
             let myStatus = LikeStatus.NONE;
             if (userId) {
@@ -55,7 +55,7 @@ export class PostRepository {
             page,
             pageSize,
             totalCount,
-            items: postWithLikes
+            items: postsWithLikes
         };
     }
 

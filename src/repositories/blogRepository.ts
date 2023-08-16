@@ -1,10 +1,19 @@
 import {BlogDBType, BlogType} from '../types';
 import {Blog} from '../models/blog';
 import {Post} from '../models/post';
-import {injectable} from 'inversify';
+import {inject, injectable} from 'inversify';
+import {PostLikeDBType} from '../types/likeType';
+import {LikeStatus} from '../enums/Likes';
+import {LikesRepository} from './likesRepository';
+import {PostRepository} from './postsRepository';
 
 @injectable()
 export class BlogRepository {
+    constructor(
+        @inject(LikesRepository) protected likesRepository: LikesRepository,
+        @inject(PostRepository) protected postRepository: PostRepository) {
+    }
+
     async getBlogs(page: number, pageSize: number, searchNameTerm: string | null, sortBy: string, sortDirection: 'asc' | 'desc') {
         const filter: any = {};
         if (searchNameTerm) {
@@ -34,7 +43,7 @@ export class BlogRepository {
         return result;
     }
 
-    async getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
+    async getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc', userId?: string) {
         const postQuery = Post.find({blogId: id});
         const totalCount = await Post.countDocuments({blogId: id});
         const pagesCount = Math.ceil(totalCount / pageSize);
@@ -45,20 +54,28 @@ export class BlogRepository {
             .limit(pageSize)
             .lean();
 
+        const postsWithLikes = await Promise.all(posts.map(async (post) => {
+            let likeInfo: PostLikeDBType | null = null;
+            let myStatus = LikeStatus.NONE;
+            if (userId) {
+                likeInfo = await this.likesRepository.getPostLikeInfo(userId, post._id.toString());
+            }
+            if (likeInfo) {
+                myStatus = likeInfo.likeStatus;
+            }
+            const newestLikeInfo = await this.likesRepository.getNewestLikesOfPost(post._id.toString());
+            return this.postRepository._mapDbPostToOutputModel({
+                ...post,
+                extendedLikesInfo: {...post.extendedLikesInfo, newestLikes: newestLikeInfo}
+            }, myStatus);
+        }));
+
         return {
             pagesCount,
             page,
             pageSize,
             totalCount,
-            items: posts.map(post => ({
-                id: post._id.toString(),
-                blogName: post.blogName,
-                createdAt: post.createdAt,
-                blogId: post.blogId,
-                content: post.content,
-                title: post.title,
-                shortDescription: post.shortDescription,
-            }))
+            items: postsWithLikes
         };
     }
 

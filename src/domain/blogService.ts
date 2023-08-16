@@ -12,8 +12,8 @@ export class BlogService {
         return this.blogRepository.getBlogs(page, pageSize, searchNameTerm, sortBy, sortDirection);
     }
 
-    getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc') {
-        return this.blogRepository.getAllPostsForBlog(id, page, pageSize, sortBy, sortDirection);
+    getAllPostsForBlog(id: string, page: number, pageSize: number, sortBy: string, sortDirection: 'asc' | 'desc', userId?:string) {
+        return this.blogRepository.getAllPostsForBlog(id, page, pageSize, sortBy, sortDirection, userId);
     }
 
     getBlogById(id: string) {
