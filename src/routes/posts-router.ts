@@ -10,8 +10,8 @@ export const postsRouter = Router();
 const postController = container.resolve(PostController);
 
 
-postsRouter.get('/', postController.getPosts.bind(postController));
-postsRouter.get('/:id', postController.getPostById.bind(postController));
+postsRouter.get('/',validateAccessTokenGetRequests, postController.getPosts.bind(postController));
+postsRouter.get('/:id', validateAccessTokenGetRequests,postController.getPostById.bind(postController));
 postsRouter.get('/:id/comments', validateAccessTokenGetRequests, postController.getCommentsByPostId.bind(postController));
 postsRouter.post('/:id/comments', authMiddleware, commentsValidations, inputValidationMiddleware, postController.createComment.bind(postController));
 postsRouter.post('/', checkAuth, postsValidations, inputValidationMiddleware, postController.createPost.bind(postController));
